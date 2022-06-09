@@ -11,82 +11,20 @@
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Bree+Serif&family=Pacifico&display=swap" rel="stylesheet">
     <script src="https://kit.fontawesome.com/d6a8ce8d77.js" crossorigin="anonymous"></script>
-    <title>Beans’n Cream Cafe</title>
-    <style>
-      html{
-            scroll-behavior: smooth;
-        }
-        .slider .indicators .indicator-item.active{
-           background-color:#6f4037 ; 
-        }
-        .move{
-            margin-top: 60px;
-            margin-bottom: 20px;
-            font-family: 'Bree Serif', serif;
-        }
-        .parallax-container{
-            min-height: 280px;
-            height: auto;
-        }
-        .brand-logo{
-            font-family: 'Bree Serif', serif;
-            font-size: 3rem !important;
-        }
-        #nav-mobile{
-            font-family: 'Bree Serif', serif;
-            font-size: 2rem !important;
-        }
-        .sidenav{
-            font-family: 'Bree Serif', serif;
-            font-size: 2rem !important;
-        }
-        .slider h3{
-            font-family: 'Pacifico', cursive;
-            
-        }
-        .slider h5{
-            font-family: 'Bree Serif', serif;
-        }
-        .header{
-            font-family: 'Pacifico', cursive;
-        }
-        .card-title{
-            font-family: 'Bree Serif', serif;
-        }
-        .card-reveal p{
-            font-family: 'Pacifico', cursive;
-        }
-        #aboutus p{
-            font-family: 'Bree Serif', serif;
-        }
-        .carousel-item p{
-            font-family: 'Bree Serif', serif;
-        }
-        .carousel-item span{
-            font-family: 'Pacifico', cursive;
-        }
-        footer h4{
-            font-family: 'Bree Serif', serif;
-        }
-        footer p{
-            font-family: 'Pacifico', cursive;
-        }
-        footer li{
-            font-family: 'Pacifico', cursive;
-        }
-    </style>
+    <title>Cat's Book</title>
+    <link rel="stylesheet" href="./css/style.css">
 </head>
 <body>
     <div class="navbar-fixed">
         <nav class=" brown darken-2 ">
             <div class="nav-wrapper container">
-              <a href="#" class="brand-logo">Beans’n Cream Cafe</a>
+              <a href="#" class="brand-logo">Cat's Book</a>
               <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
               <ul id="nav-mobile" class="right hide-on-med-and-down">
                 <li><a href="#"> Home<i class="material-icons left">home</i></a></li>
-                <li><a href="#menu">Carte-du-Jour<i class="material-icons left">content_paste</i></a></li>
                 <li><a href="#aboutus">About Us</a></li>
                 <li><a href="#contact">Contact Us</a></li>
+                <li><a href="./login.html">Log In</a></li>
               </ul>
             </div>
         </nav>
@@ -94,37 +32,23 @@
     
     <ul class="sidenav" id="mobile-demo">
         <li><a href="#">Home<i class="material-icons left">home</i></a></li>
-        <li><a href="#menu">Carte-du-Jour<i class="material-icons left">content_paste</i></a></li>
         <li><a href="#aboutus">About Us</a></li>
         <li><a href="#contact">Contact Us</a></li>
+        <li><a href="./login.html">Log In</a></li>
     </ul>
     <div class="slider">
         <ul class="slides">
             <li>
                 <img src="https://us.123rf.com/450wm/alinapolina/alinapolina1906/alinapolina190600094/125364908-estanter%C3%ADa-colecci%C3%B3n-de-libros-de-texto-y-revistas-ilustraci%C3%B3n-de-vector-.jpg?ver=6" alt="">
                 <div class="caption center-align white-text ">
-                    <h3>Cat´s Book</h3>
+                    <h3>Cat's Book</h3>
                     <h5 class="light text-lighten-3">All you need to feel better.</h5>
-                </div>
-            </li>
-            <li>
-                <img src="https://cdn.pixabay.com/photo/2015/09/01/21/00/coffee-917613_1280.jpg" alt="">
-                <div class="caption center-align white-text">
-                    <h3>Beans’n Cream Cafe</h3>
-                    <h5 class="light text-lighten-3">We serve one of the best coffee around.</h5>
-                </div>
-            </li>
-            <li>
-                <img src="https://cdn.pixabay.com/photo/2013/11/05/23/55/coffee-206142_1280.jpg" alt="">
-                <div class="caption center-align white-text">
-                    <h3>Beans’n Cream Cafe</h3>
-                    <h5 class="light text-lighten-3">Lorem ipsum dolor sit amet consectetur adipisicing elit. Magnam, eveniet!</h5>
                 </div>
             </li>
         </ul>
     </div>
     <div class="section white center">
-        <h2 class="header">Beans’n Cream Cafe</h2>
+        <h2 class="header">Cat's Book</h2>
         <div class="row container">
             <div class="col l8 s12 center-align move">
                 Beans’n Cream Cafe is a simple HTML website template provided by The Web Weavers. Feel free
@@ -501,18 +425,6 @@
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <!-- Compiled and minified JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-    <script>
-        $(document).ready(function(){
-        $('.modal').modal();
-        $('.sidenav').sidenav();
-        $('.parallax').parallax();
-        $('.myreviews').carousel({
-            numVisible:7,
-            shift:55,
-            padding:55,
-        });
-        $('.slider' ).slider({full_width: true});
-        });
-    </script>
+    <script src="./js/index.js"></script>
 </body>
 </html>
