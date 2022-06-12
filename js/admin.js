@@ -1,180 +1,6 @@
-$(document).ready(function () {
-    $('.modal').modal();
-    $('.sidenav').sidenav();
-    $('.parallax').parallax();
-    $('.myreviews').carousel({
-        numVisible: 7,
-        shift: 55,
-        padding: 55,
-    });
-    $('.slider').slider({ full_width: true });
-});
-
-function ocultarHome() {
-    document.getElementById("home").style.display = "none";
-    document.getElementById("login").style.display = "block";
-    document.getElementById("admin").style.display = "none";
-}
-
-function mostrarHome() {
-    document.getElementById("home").style.display = "block";
-    document.getElementById("login").style.display = "none";
-    document.getElementById("admin").style.display = "none";
-}
-
-function login(event) {
-    event.preventDefault()
-    usuario=document.getElementById("user").value
-    password=document.getElementById("pass").value
-    if (usuario=="Wilfred" && password=="123") {
-        // alert('Te haz loggeado bien')
-        document.getElementById("admin").style.display = "block";
-        document.getElementById("login").style.display = "none";
-        
-    }
-    else if (listaListas.buscarUsuario(usuario,password)) {
-        document.getElementById("admin").style.display = "block";
-        document.getElementById("login").style.display = "none";
-    }
-    else{
-        alert("No se encontro el usuario")
-    }
-}
-var listaListas;
-
-// --------------------------------CODIGO---------LISTA DE LISTAS------------------------------------------------------------------------------
-class NodoUsuario {
-    constructor(dpi,nombreCompleto,nombreUsuario,correo,rol,password,telefono){
-        this.dpi=dpi;
-        this.nombreCompleto=nombreCompleto;
-        this.nombreUsuario=nombreUsuario;
-        this.correo=correo;
-        this.rol=rol;
-        this.password=password;
-        this.telefono=telefono;
-        this.siguiente=null;
-        this.abajo=null;
-    }
-}
-
-class NodoLibroUsuario{
-    constructor(nombreLibro){
-        this.nombreLibro=nombreLibro;
-        this.siguiente=null;
-    }
-
-}
-
-    class ListaUsuariosLibros{
-    constructor(){
-        this.primero=null;
-        this.utlimo=null;
-        this.size=0;
-    }
-
-    agregarUsuario(dpi,nombreCompleto,nombreUsuario,correo,rol,password,telefono){
-        let nuevoUser=new NodoUsuario(dpi,nombreCompleto,nombreUsuario,correo,rol,password,telefono);
-        if (this.primero==null) {
-            this.primero = nuevoUser;
-            this.primero.siguiente=this.primero;
-            this.ultimo=this.primero;
-            this.primero.anterior=this.ultimo;
-            this.size++;
-        }
-        //HACE ESTO SI LA LISTA YA TIENE POR LO MENOS UN ELEMENTO
-        else{
-            this.ultimo.siguiente = nuevoUser;
-            nuevoUser.anterior=this.ultimo;
-            nuevoUser.siguiente = this.primero;
-            this.ultimo = nuevoUser;
-            this.primero.anterior=this.ultimo;
-            this.size++;
-        }
-    }
-
-    agregarLibro(usuario,nombreLibro){
-        let tempUser=this.primero;
-        while(tempUser!=null){
-            if (tempUser.nombreUsuario==usuario) {
-                let nuevoLibro=new NodoLibroUsuario(nombreLibro);
-                let primerLibro=tempUser.abajo;
-                tempUser.abajo=nuevoLibro;
-                nuevoLibro.siguiente=primerLibro;
-                break;
-            }
-            tempUser=tempUser.siguiente;
-        }
-        if (tempUser==null) {
-            console.log("No existe el usuario")
-        }
-        
-    }
-
-    mostrarUsuarios(){
-        let aux=this.primero;
-        console.log("-------------USUARIOS------------");
-        do{
-            console.log(aux.nombreCompleto);
-            aux=aux.siguiente;
-        }
-        while (aux!=this.primero);
-    }
-
-    mostrarLibrosUsuario(usuario){
-        let aux=this.primero;
-        do{
-            if (aux.nombreUsuario==usuario) {
-                console.log("----------USUARIO:  "+usuario+" ---------------");
-                let auxLibro=aux.abajo;
-                while(auxLibro!=null);{
-                    console.log(auxLibro.nombreLibro);
-                    auxLibro=auxLibro.siguiente;
-                }
-            }
-        }
-        while(aux!=this.primero)
-    }
-
-    buscarUsuario(usuario,password){
-        let aux=this.primero;
-        console.log(aux.nombreUsuario)
-        do{
-            if ((aux.nombreUsuario==usuario) && (aux.password==password)) {
-                return aux;
-            }
-            aux=aux.siguiente;
-        }while(aux!=this.primero)
-    }
-}
 
 
-function listasL(e) {
-    var archivo = e.target.files[0];
-    console.log(archivo)
-    if (!archivo) {
-        return;
-    }
-
-    let lector = new FileReader();
-    lector.onload = function(e) {
-        let contenido = e.target.result;
-        const usuarios = JSON.parse(contenido);
-        listaListas= new ListaUsuariosLibros()
-        for (const x in usuarios) {
-            let user=usuarios[x]
-            listaListas.agregarUsuario(user.dpi,user.nombre_completo,user.nombre_usuario,user.correo,user.rol,user.contrasenia,user.telefono);
-
-        }
-        listaListas.mostrarUsuarios()
-    }
-    
-    lector.readAsText(archivo);
-    
-    alert('Ha cargado exitosamente los usuarios!');
-}
-document.getElementById("listasL").addEventListener("change", listasL, false);
-// -------------------------------------------------------------------------------------------------------------------------
-// ---------------------------------------------------CODIGO MATRIZ ORTOGONAL, CARGAR LIBROS----------------------------------
+// inputElement.addEventListener("change", handleFiles, false);
 function handleFiles(e) {
     console.log("hola")
     var archivo = e.target.files[0];
@@ -214,8 +40,8 @@ function handleFiles(e) {
     
     alert('You have successfully upload the file!');
 }
-
 document.getElementById("fileupload").addEventListener("change", handleFiles, false);
+
 class NodoMatrizOrtogonal {
     constructor(isbn, nombreAutor, nombreLibro, cantidad, fila, columna, paginas, categoria) {
         this.isbn = isbn;
@@ -347,4 +173,3 @@ class MatrizOrtogonal {
     // }
     }
 }
-//---------------------------------------------------------------------------------------------------------------------------------------

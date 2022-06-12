@@ -1,0 +1,32 @@
+[
+    {
+        "isbn":9556684946546546,
+        "nombre_autor":"Strickland Shelton",
+        "nombre_libro":"Zounds",
+        "cantidad":2,
+        "fila":1,
+        "columna":1,
+        "paginas":187,
+        "categoria":"Fantasia"
+    },
+    {
+        "isbn":4849451315,
+        "nombre_autor":"Collis Cohen",
+        "nombre_libro":"Isousure",
+        "cantidad":3,
+        "fila":2,
+        "columna":2,
+        "paginas":214,
+        "categoria":"Thriller"
+    },
+    {
+        "isbn":2144856952365,
+        "nombre_autor":"Williamson Lynn",
+        "nombre_libro":"Crustatia",
+        "cantidad":1,
+        "fila":3,
+        "columna":3,
+        "paginas":191,
+        "categoria":"Fantasia"
+    }
+]

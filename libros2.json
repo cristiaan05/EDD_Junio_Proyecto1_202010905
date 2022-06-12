@@ -1,0 +1,32 @@
+[
+	{
+		"isbm": 12345678912,
+		"nombre_autor": "pepe juarez",
+		"nombre_libro": "principito",
+		"cantidad": 2,
+		"fila":5,
+		"columna": 10,
+		"paginas": 185,
+		"categoria": "Fantasia"
+	},
+	{
+		"isbm": 987654321123,
+		"nombre_autor": "juan perez",
+		"nombre_libro": "libro 1",
+		"cantidad": 7,
+		"fila": 9,
+		"columna": 1,
+		"paginas": 215,
+		"categoria": "Thriller"
+	},
+	{
+		"isbm": 147258369852,
+		"nombre_autor": "Luis lopez",
+		"nombre_libro": "libro 2",
+		"cantidad": 5,
+		"fila":6,
+		"columna": 2,
+		"paginas": 191,
+		"categoria": "Fantasia"
+	}
+]

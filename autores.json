@@ -1,0 +1,26 @@
+[
+	{
+		"dpi": 123456789987,
+		"nombre_autor": "Miguel gonzalez",
+		"correo": "correo1@gmail.com",
+		"telefono": "+502 1234-5678",
+		"direccion": " casa de miguel avenida 1",
+		"biografia": "biografia no 1 del autor miguel gonzalez"
+	},
+	{
+		"dpi": 987654321123,
+		"nombre_autor": "maria avila",
+		"correo": "correo2@gmail.com",
+		"telefono": "+502 1111-5678",
+		"direccion": " casa de maria avenida 2",
+		"biografia": "biografia no 2 del autor maria avila"
+	},
+	{
+		"dpi": 147258369852,
+		"nombre_autor": "juana herrera",
+		"correo": "correo3@gmail.com",
+		"telefono": "+502 5465-5678",
+		"direccion": " casa de juana avenida 3",
+		"biografia": "biografia no 3 del autor juana herrera"
+	}
+]

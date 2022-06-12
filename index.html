@@ -15,6 +15,8 @@
     <link rel="stylesheet" href="./css/style.css">
 </head>
 <body>
+<!-- //----------------------------------------------------BLOCK DEL HOME----------------------------------------------------------------------// -->
+<div id="home" style="display:block;">
     <div class="navbar-fixed">
         <nav class=" brown darken-2 ">
             <div class="nav-wrapper container">
@@ -24,18 +26,11 @@
                 <li><a href="#"> Home<i class="material-icons left">home</i></a></li>
                 <li><a href="#aboutus">About Us</a></li>
                 <li><a href="#contact">Contact Us</a></li>
-                <li><a href="./login.html">Log In</a></li>
+                <li><a onclick="ocultarHome()">Log In</a></li>
               </ul>
             </div>
         </nav>
     </div>
-    
-    <ul class="sidenav" id="mobile-demo">
-        <li><a href="#">Home<i class="material-icons left">home</i></a></li>
-        <li><a href="#aboutus">About Us</a></li>
-        <li><a href="#contact">Contact Us</a></li>
-        <li><a href="./login.html">Log In</a></li>
-    </ul>
     <div class="slider">
         <ul class="slides">
             <li>
@@ -134,7 +129,7 @@
         <div class="col s12 m6 l4" style="padding: 30px 5px;">
             <div class="card">
                 <div class="card-image waves-effect waves-block waves-light">
-                  <img class="activator" src="https://cdn.pixabay.com/photo/2015/04/20/13/28/coffee-731330_1280.jpg">
+                  <!-- <img class="activator" src="https://cdn.pixabay.com/photo/2015/04/20/13/28/coffee-731330_1280.jpg"> -->
                 </div>
                 <div class="card-content">
                   <span class="card-title activator grey-text text-darken-4" style="font-weight: 500;">Expresso<i class="material-icons right">more_vert</i></span>
@@ -382,6 +377,7 @@
             </a>
         </div>
     </div>
+    </body>
     <footer class="brown darken-3" id="contact">
         <div class="container">
             <div class="row">
@@ -421,10 +417,110 @@
             </div>
         </div>
     </footer>
-
+</div>
+    <!-- //-------------------------------------------------FIN-DEL --BLOCK DEL HOME----------------------------------------------------------------------// -->
+    
+    
+    <!-- //------------------------------------------------BLOCK---DEL--LOGIN-----------------------------------------------------------------// -->
+<div id="login" style="display:none;">
+    <div class="navbar-fixed">
+        <nav class=" brown darken-2 ">
+            <div class="nav-wrapper container">
+              <a href="#" class="brand-logo">Cat's Book</a>
+              <ul id="nav-mobile" class="right hide-on-med-and-down">
+                <li><a href="./index.html"> Home<i class="material-icons left">home</i></a></li>
+                <li><a href="./index.html#aboutus">About Us</a></li>
+                <li><a href="./index.html#contact">Contact Us</a></li>
+                <li><a onclick="ocultarHome()">Login</a></li>
+              </ul>
+            </div>
+        </nav>
+    </div>
+    
+        <!-- --------------------------------ESPACIO DONDE SE CREA EL FORMULARIO PARA EL LOGIN ------------------>
+        <div class="login-page">
+            <div class="form">
+              <form class="login-form">
+                <input type="text" id="user" placeholder="Ingrese su usuario"/>
+                <input type="password" id="pass" placeholder="Ingrese su contraseña"/>
+                <button onclick="login(event)">login</button>
+              </form>
+            </div>
+          </div>
+        <!-- ----------------------------------------------------------------------------------------------- -->
+</div>
+    <!-- //--------------------------------------------FIN--DEL --BLOCK---DEL--LOGIN-----------------------------------------------------------------// -->
+    
+    <!---------------------------------------------------------------------- INICIO DEL BLOQUE ADMINISTRADO------------------------ -->
+<div id="admin" style="display:none;">
+        <div class="navbar-fixed">
+            <nav class=" brown darken-2 ">
+                <div class="nav-wrapper container">
+                  <a href="#" class="brand-logo">Cat's Book</a>
+                  <ul id="nav-mobile" class="right hide-on-med-and-down">
+                    <li><a href="#"> Home<i class="material-icons left">home</i></a></li>
+                    <li><a href="#cargas">CargaMasiva</a></li>
+                    <!-- <li><a href="./index.html#contact">Contact Us</a></li> -->
+                    <li><a onclick="mostrarHome()">Cerrar Sesión</a></li>
+                  </ul>
+                </div>
+            </nav>
+        </div>
+        <body id="loginn">
+          <div class="section white center" id="cargas">
+              <div class="row container">
+                  <h2 class="header">Cargas Masivas</h2>
+                  <div class="col s12 m6 l4" style="padding: 30px 5px;">
+                    <div class="card">
+                        <div class="card-image waves-effect waves-block waves-light">
+                          <img class="activator" src="https://wp.telesurtv.net/__export/1619168715048/sites/telesur/img/2021/04/23/libros_editada.jpg ">
+                        </div>
+                        <div class="card-content">
+                          <span class="card-title activator grey-text text-darken-4" style="font-weight: 500;">Carga Libros<i class="material-icons right">more_vert</i></span>
+                        </div>
+                        <div class="formFile">
+                            <input id="fileupload" type="file" name="fileupload" /> 
+                            <!-- <button id="upload-button" onclick="uploadFile()">Cargar</button> -->
+                        </div>
+                        <!-- <div class="card-reveal">
+                          <span class="card-title grey-text text-darken-4" style="font-size: 2rem; font-weight: 500;">Bubble Tea<i class="material-icons right">close</i></span>
+                          <p>An incredibly unique looking beverage, Bubble tea is a Taiwanese recipe made by blending a tea base with milk, 
+                              fruit and fruit juices,
+                               then adding the signature “bubbles” - yummy tapioca pearls that sit at the bottom.</p> 
+                          <p class="center flow-text">Hot :- $8 <br> Iced :- $12</p>
+                        </div> -->
+                    </div>
+                </div>
+                <div class="col s12 m6 l4" style="padding: 30px 5px;">
+                    <div class="card">
+                        <div class="card-image waves-effect waves-block waves-light">
+                          <img class="activator" src="https://www.osi.es/sites/default/files/imagecache/detalle_generico/images/imagen-decorativa-infografia-cuentas-usuario.png">
+                        </div>
+                        <div class="card-content">
+                          <span class="card-title activator grey-text text-darken-4" style="font-weight: 500;">Carga Usuarios<i class="material-icons right">more_vert</i></span>
+                        </div>
+                        <div class="formFile">
+                            <input id="listasL" type="file" name="fileupload" /> 
+                            <!-- <button id="upload-button" onclick="uploadFile()">Cargar</button> -->
+                        </div>
+                        <!-- <div class="card-reveal">
+                          <span class="card-title grey-text text-darken-4" style="font-size: 2rem; font-weight: 500;">Bubble Tea<i class="material-icons right">close</i></span>
+                          <p>An incredibly unique looking beverage, Bubble tea is a Taiwanese recipe made by blending a tea base with milk, 
+                              fruit and fruit juices,
+                               then adding the signature “bubbles” - yummy tapioca pearls that sit at the bottom.</p> 
+                          <p class="center flow-text">Hot :- $8 <br> Iced :- $12</p>
+                        </div> -->
+                    </div>
+                </div>
+              </div>
+              
+          </div>
+        </body>
+    </div>
+    <!------------------------------------------------------------------FIN-- DEL BLOQUE ADMINISTRADO-R---------------------------- -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <!-- Compiled and minified JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-    <script src="./js/index.js"></script>
+    <script  src="./js/index.js"></script>
 </body>
 </html>

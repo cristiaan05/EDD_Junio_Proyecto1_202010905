@@ -1,0 +1,29 @@
+[
+	{
+		"dpi":123456789987,
+		"nombre_completo": "william leon",
+		"nombre_usuario": "wilin",
+		"correo": "correowili@gmail.com",
+		"rol": "Usuario",
+		"contrasenia": "contra",
+		"telefono": "+502 8884-9512"
+	},
+	{
+		"dpi":987654321123,
+		"nombre_completo": "clarice baird",
+		"nombre_usuario": "clarin",
+		"correo": "correoclari@gmail.com",
+		"rol": "Administrador",
+		"contrasenia": "contra123",
+		"telefono": "+502 6541-1598"
+	},
+	{
+		"dpi":147258369852,
+		"nombre_completo": "luis espino",
+		"nombre_usuario": "luisin",
+		"correo": "correoluis@gmail.com",
+		"rol": "Usuario",
+		"contrasenia": "contra321",
+		"telefono": "+502 1475-3695S"
+	}
+]
