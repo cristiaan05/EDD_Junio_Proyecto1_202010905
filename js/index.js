@@ -14,33 +14,71 @@ function ocultarHome() {
     document.getElementById("home").style.display = "none";
     document.getElementById("login").style.display = "block";
     document.getElementById("admin").style.display = "none";
+    document.getElementById("usuario").style.display = "none";
 }
 
 function mostrarHome() {
     document.getElementById("home").style.display = "block";
     document.getElementById("login").style.display = "none";
     document.getElementById("admin").style.display = "none";
+    document.getElementById("usuario").style.display = "none";
+    localStorage.removeItem("usuario");
+}
+
+function comprarLibro(event){
+    event.preventDefault()
+    let nombreUsuairo=localStorage.getItem("usuario");
+    let libro=document.getElementById("selectMenu").value;
+    let cantidad=document.getElementById("cantidad").value;
+    // console.log(,libro);
+    
+    if (listaSimpLibros.cantidadLibro(libro)>=cantidad) {
+        listaListas.agregarLibro(JSON.parse(nombreUsuairo),libro,cantidad);
+    }else if (listaSimpLibros.cantidadLibro(libro)<cantidad) {
+        listaListas.agregarLibro(JSON.parse(nombreUsuairo),libro,cantidad);
+        let cola=new Cola();
+        cola.encolar(JSON.parse(nombreUsuairo),libro,cantidad);
+    }
+
 }
 
 function login(event) {
     event.preventDefault()
     usuario=document.getElementById("user").value
     password=document.getElementById("pass").value
+    
     if (usuario=="Wilfred" && password=="123") {
         // alert('Te haz loggeado bien')
+        localStorage.setItem("usuario",JSON.stringify(usuario))
         document.getElementById("admin").style.display = "block";
         document.getElementById("login").style.display = "none";
         
     }
-    else if (listaListas.buscarUsuario(usuario,password)) {
+    //SE UTILIZA LA POSICOIN [0], PORQUE EL RETURN DE LA FUNCION BUSCARUSUARIO RETORNA 2 VALORES DISTITNTOS
+    else if (listaListas.buscarUsuario(usuario,password)[0]=="admin") {
+        localStorage.removeItem("usuario");
+        localStorage.setItem("usuario",JSON.stringify(listaListas.buscarUsuario(usuario,password)[1]))
         document.getElementById("admin").style.display = "block";
         document.getElementById("login").style.display = "none";
+        document.getElementById("usuario").style.display = "none";
+    }
+    else if (listaListas.buscarUsuario(usuario,password)[0]=="user") {
+        localStorage.removeItem("usuario");
+        localStorage.setItem("usuario",JSON.stringify(listaListas.buscarUsuario(usuario,password)[1]))
+        document.getElementById("usuario").style.display = "block";
+        document.getElementById("login").style.display = "none";
+        document.getElementById("admin").style.display = "none";
     }
     else{
         alert("No se encontro el usuario")
     }
 }
+
+function cargarLibros() {
+    listaSimpLibros.mostrarLibros();
+}
 var listaListas;
+var listaSimpLibros;
 
 // --------------------------------CODIGO---------LISTA DE LISTAS------------------------------------------------------------------------------
 class NodoUsuario {
@@ -58,14 +96,15 @@ class NodoUsuario {
 }
 
 class NodoLibroUsuario{
-    constructor(nombreLibro){
+    constructor(nombreLibro,cantidad){
         this.nombreLibro=nombreLibro;
+        this.cantidad=cantidad;
         this.siguiente=null;
     }
 
 }
 
-    class ListaUsuariosLibros{
+class ListaUsuariosLibros{
     constructor(){
         this.primero=null;
         this.utlimo=null;
@@ -73,9 +112,9 @@ class NodoLibroUsuario{
     }
 
     agregarUsuario(dpi,nombreCompleto,nombreUsuario,correo,rol,password,telefono){
-        let nuevoUser=new NodoUsuario(dpi,nombreCompleto,nombreUsuario,correo,rol,password,telefono);
+        let nuevoLib=new NodoUsuario(dpi,nombreCompleto,nombreUsuario,correo,rol,password,telefono);
         if (this.primero==null) {
-            this.primero = nuevoUser;
+            this.primero = nuevoLib;
             this.primero.siguiente=this.primero;
             this.ultimo=this.primero;
             this.primero.anterior=this.ultimo;
@@ -83,32 +122,37 @@ class NodoLibroUsuario{
         }
         //HACE ESTO SI LA LISTA YA TIENE POR LO MENOS UN ELEMENTO
         else{
-            this.ultimo.siguiente = nuevoUser;
-            nuevoUser.anterior=this.ultimo;
-            nuevoUser.siguiente = this.primero;
-            this.ultimo = nuevoUser;
+            this.ultimo.siguiente = nuevoLib;
+            nuevoLib.anterior=this.ultimo;
+            nuevoLib.siguiente = this.primero;
+            this.ultimo = nuevoLib;
             this.primero.anterior=this.ultimo;
             this.size++;
         }
     }
 
-    agregarLibro(usuario,nombreLibro){
+    agregarLibro(usuario,nombreLibro,cantidad){
         let tempUser=this.primero;
-        while(tempUser!=null){
+        do{
+            console.log("entre aqui")
             if (tempUser.nombreUsuario==usuario) {
-                let nuevoLibro=new NodoLibroUsuario(nombreLibro);
+                let nuevoLibro=new NodoLibroUsuario(nombreLibro,cantidad);
                 let primerLibro=tempUser.abajo;
                 tempUser.abajo=nuevoLibro;
                 nuevoLibro.siguiente=primerLibro;
+                console.log("Libro: "+nuevoLibro.nombreLibro+" a usuario: "+usuario+" agregado")
                 break;
             }
             tempUser=tempUser.siguiente;
-        }
+        }while(tempUser!=this.primero);
+        this.mostrarLibrosUsuario(usuario);
         if (tempUser==null) {
             console.log("No existe el usuario")
         }
         
     }
+
+    
 
     mostrarUsuarios(){
         let aux=this.primero;
@@ -125,11 +169,19 @@ class NodoLibroUsuario{
         do{
             if (aux.nombreUsuario==usuario) {
                 console.log("----------USUARIO:  "+usuario+" ---------------");
-                let auxLibro=aux.abajo;
-                while(auxLibro!=null);{
+                var auxLibro=aux.abajo;
+                do{
+                    if (auxLibro==null) {
+                        return
+                    }
                     console.log(auxLibro.nombreLibro);
                     auxLibro=auxLibro.siguiente;
-                }
+                }while(auxLibro!=aux.abajo);
+                return
+            }
+            aux=aux.siguiente;
+            if (aux==this.primero) {
+                console.log("No se encontro el libro")
             }
         }
         while(aux!=this.primero)
@@ -137,10 +189,13 @@ class NodoLibroUsuario{
 
     buscarUsuario(usuario,password){
         let aux=this.primero;
-        console.log(aux.nombreUsuario)
+        // console.log(aux.nombreUsuario)
         do{
-            if ((aux.nombreUsuario==usuario) && (aux.password==password)) {
-                return aux;
+            if ((aux.nombreUsuario==usuario) && (aux.password==password) && (aux.rol=="Administrador")) {
+                return ["admin",aux.nombreUsuario];
+            }
+            else if((aux.nombreUsuario==usuario) && (aux.password==password) && (aux.rol=="Usuario")){
+                return ["user",aux.nombreUsuario];
             }
             aux=aux.siguiente;
         }while(aux!=this.primero)
@@ -174,9 +229,71 @@ function listasL(e) {
 }
 document.getElementById("listasL").addEventListener("change", listasL, false);
 // -------------------------------------------------------------------------------------------------------------------------
+
+//--------------------------------------NODO LISTA SIMPLE LIBROS------------------------------------------------------------
+class NodoLib{
+    constructor(isbn, nombreAutor, nombreLibro, cantidad, fila, columna, paginas, categoria) {
+        this.isbn = isbn;
+        this.nombreAutor = nombreAutor;
+        this.nombreLibro = nombreLibro;
+        this.cantidad = cantidad;
+        this.fila = fila;
+        this.columna = columna;
+        this.paginas = paginas;
+        this.categoria = categoria;
+        this.siguiente = null;
+    }
+
+}
+
+class ListaLib{
+    constructor(){
+        this.primero=null;
+        this.size=0;
+    }
+    agregarLibro(isbn, nombreAutor, nombreLibro, cantidad, fila, columna, paginas, categoria){
+        let nuevoLib=new NodoLib(isbn, nombreAutor, nombreLibro, cantidad, fila, columna, paginas, categoria);
+        if (this.primero==null) {
+            this.primero = nuevoLib;
+            this.size++;
+        }
+        //HACE ESTO SI LA LISTA YA TIENE POR LO MENOS UN ELEMENTO
+        else{
+            let aux=this.primero;
+            while (aux.siguiente!=null) {
+                aux=aux.siguiente;
+            }
+            aux.siguiente=nuevoLib
+        }
+        return nuevoLib;
+    }
+
+    cantidadLibro(nombreLibro){
+        let temp=this.primero;
+        while (temp!=null) {
+            if (temp.nombreLibro==nombreLibro) {
+                return temp.cantidad;
+            }
+            temp=temp.siguiente;
+        }
+    }
+
+    mostrarLibros(){
+        console.log("hola");
+        let aux=this.primero;
+        var select=document.getElementById("selectMenu")
+        select.innerHTML='<option selected>Escoge el Nombre del Libro</option>'
+        while(aux!=null){
+            select.innerHTML+='<option value="'+aux.nombreLibro+'">'+aux.nombreLibro+'</option>'
+            aux=aux.siguiente;
+        }
+        return "ok"
+    }
+
+}
+//-------------------------------------------------------------------------------------------------------------------------
 // ---------------------------------------------------CODIGO MATRIZ ORTOGONAL, CARGAR LIBROS----------------------------------
 function handleFiles(e) {
-    console.log("hola")
     var archivo = e.target.files[0];
     console.log(archivo)
     if (!archivo) {
@@ -187,10 +304,12 @@ function handleFiles(e) {
     lector.onload = function(e) {
         let contenido = e.target.result;
         let matriz= new MatrizOrtogonal()
+        listaSimpLibros=new ListaLib();
         const libros = JSON.parse(contenido);
 
         for (const x in libros) {
             let libro=libros[x]
+            listaSimpLibros.agregarLibro(libro.isbn,libro.nombre_autor,libro.nombre_libro,libro.cantidad,libro.fila,libro.columna,libro.paginas,libro.categoria);
             for (let x = 1; x < (3+1); x++) {
                for (let y = 1; y < (3+1); y++) {
                     if ((x==libro.fila)&&(y==libro.columna)) {
@@ -208,6 +327,7 @@ function handleFiles(e) {
             // console.log(pitza.tipo, pitza.forma, pitza.costo);
         }
         matriz.mostrarMatriz()
+        listaSimpLibros.mostrarLibros();
     }
     
     lector.readAsText(archivo);
@@ -348,3 +468,41 @@ class MatrizOrtogonal {
     }
 }
 //---------------------------------------------------------------------------------------------------------------------------------------
+
+//----------------------------------------COLA DE ESPERA PARA LIBROS-------------------------------------
+class NodoCola{
+    constructor(nombreUsuario,nombreLibro,cantidad){
+        this.nombreUsuario=nombreUsuario;
+        this.nombreLibro=nombreLibro;
+        this.cantidad=cantidad;
+        this.siguiente=null;
+    }
+}
+
+class Cola{
+    constructor(){
+        this.primero=null;
+        this.ultimo=null;
+    }
+
+    encolar(nombreUsuario,nombreLibro,cantidad){
+        let nuevo=new NodoCola(nombreUsuario,nombreLibro,cantidad);
+        if (this.primero==null) {
+            this.primero=nuevo;
+            this.ultimo=nuevo;
+        }else{
+            this.ultimo.siguiente=nuevo;
+            this.ultimo=nuevo;
+        }
+    }
+
+    desencolar(){
+        let temp=this.primero.siguiente;
+        let data=this.primero.nombreLibro;
+        this.primero.siguiente=null;
+        this.primero=temp;
+        return data;
+    }
+}
+
+//-------------------------------------------------------------------------------------------------------

@@ -11,6 +11,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Bree+Serif&family=Pacifico&display=swap" rel="stylesheet">
     <script src="https://kit.fontawesome.com/d6a8ce8d77.js" crossorigin="anonymous"></script>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
     <title>Cat's Book</title>
     <link rel="stylesheet" href="./css/style.css">
 </head>
@@ -518,6 +521,36 @@
         </body>
     </div>
     <!------------------------------------------------------------------FIN-- DEL BLOQUE ADMINISTRADO-R---------------------------- -->
+    <!-------------------------------------------------------INCIIO BLOQUE USUARIO-------------------------------------------------  -->
+    <div id="usuario" style="display:none;">
+        <div class="navbar-fixed">
+            <nav class=" brown darken-2 ">
+                <div class="nav-wrapper container">
+                  <a href="#" class="brand-logo">Cat's Book</a>
+                  <ul id="nav-mobile" class="right hide-on-med-and-down">
+                    <li><a href="#"> Home<i class="material-icons left">home</i></a></li>
+                    <li><a href="#comprar">Compra Libros</a></li>
+                    <!-- <li><a href="./index.html#contact">Contact Us</a></li> -->
+                    <li><a onclick="mostrarHome()">Cerrar Sesión</a></li>
+                  </ul>
+                </div>
+            </nav>
+        </div>
+        <body id="loginn">
+            <div class="login-page" id="comprar">
+                <div class="form">
+                  <form class="login-form" >
+                    <select class="form-select" aria-label="Default select example" id="selectMenu">
+                        <option selected>Open this select menu</option>
+                      </select>
+                    <input type="number" id="cantidad" placeholder="Ingrese la cantidad que desea comprar"/>
+                    <button onclick="comprarLibro(event)">Comprar</button>
+                  </form>
+                </div>
+              </div>
+        </body>
+    </div>
+    <!-- ----------------------------------------------FIN BLOQUE USUARIO---------------------------------------------------------- -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <!-- Compiled and minified JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
