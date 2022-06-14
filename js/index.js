@@ -52,7 +52,7 @@ function login(event) {
         localStorage.setItem("usuario",JSON.stringify(usuario))
         document.getElementById("admin").style.display = "block";
         document.getElementById("login").style.display = "none";
-        
+        graficaLista();
     }
     //SE UTILIZA LA POSICOIN [0], PORQUE EL RETURN DE LA FUNCION BUSCARUSUARIO RETORNA 2 VALORES DISTITNTOS
     else if (listaListas.buscarUsuario(usuario,password)[0]=="admin") {
@@ -61,6 +61,7 @@ function login(event) {
         document.getElementById("admin").style.display = "block";
         document.getElementById("login").style.display = "none";
         document.getElementById("usuario").style.display = "none";
+        graficaLista();
     }
     else if (listaListas.buscarUsuario(usuario,password)[0]=="user") {
         localStorage.removeItem("usuario");
@@ -77,9 +78,14 @@ function login(event) {
 function cargarLibros() {
     listaSimpLibros.mostrarLibros();
 }
+
+function graficaLista() {
+    console.log("sfasdf")
+    let nombreUsuairo=localStorage.getItem("usuario");
+    listaListas.mostrarLibrosUsuario(JSON.parse(nombreUsuairo));
+}
 var listaListas;
 var listaSimpLibros;
-
 // --------------------------------CODIGO---------LISTA DE LISTAS------------------------------------------------------------------------------
 class NodoUsuario {
     constructor(dpi,nombreCompleto,nombreUsuario,correo,rol,password,telefono){
@@ -90,6 +96,7 @@ class NodoUsuario {
         this.rol=rol;
         this.password=password;
         this.telefono=telefono;
+        this.sizeLibros=0;
         this.siguiente=null;
         this.abajo=null;
     }
@@ -140,12 +147,14 @@ class ListaUsuariosLibros{
                 let primerLibro=tempUser.abajo;
                 tempUser.abajo=nuevoLibro;
                 nuevoLibro.siguiente=primerLibro;
+                tempUser.sizeLibros++;
+                alert('Libro Comprado');
                 console.log("Libro: "+nuevoLibro.nombreLibro+" a usuario: "+usuario+" agregado")
                 break;
             }
             tempUser=tempUser.siguiente;
         }while(tempUser!=this.primero);
-        this.mostrarLibrosUsuario(usuario);
+        // this.mostrarLibrosUsuario(usuario);
         if (tempUser==null) {
             console.log("No existe el usuario")
         }
@@ -166,7 +175,16 @@ class ListaUsuariosLibros{
 
     mostrarLibrosUsuario(usuario){
         let aux=this.primero;
+        let contador=0;
+        let uniones=""
+        let alineacion=""
+        var codigodotL=""
+        var codigodot = 'digraph L{ node[shape=box fillcolor="#FFEDBB"style=filled] subgraph cluster_p{label ="Lista de Listas" bgcolor="red" edge[dir="forward"]';
         do{
+            codigodot=codigodot+'nodo'+contador+'[label="'+aux.nombreUsuario+'",fillcolor=white,group=0]'
+            codigodotL+= this.segundaC('nodo'+contador,aux.nombreUsuario)
+            console.log("dot--"+codigodotL)
+            contador++;
             if (aux.nombreUsuario==usuario) {
                 console.log("----------USUARIO:  "+usuario+" ---------------");
                 var auxLibro=aux.abajo;
@@ -185,7 +203,117 @@ class ListaUsuariosLibros{
             }
         }
         while(aux!=this.primero)
+        alineacion="{rank=same;"
+        for (let index = 0; index < this.size-1; index++) {
+            uniones=uniones+'nodo'+index+'->'+'nodo'+(index+1)+'[dir=forward color="black"]'
+            if (index==(this.size-2)) {
+                alineacion+='nodo'+index+',';
+                alineacion+='nodo'+(index+1);
+            }else{
+                alineacion+='nodo'+index+','
+            }
+            
+        }
+        alineacion+='}'
+        uniones+='nodo'+(this.size-1)+'->nodo0'
+        codigodot=codigodot+uniones
+        codigodot+=alineacion
+        codigodot+=codigodotL
+        codigodot=codigodot+'}}'
+        console.log(codigodot)
+        d3.select("#grafica").graphviz()
+            .width(500)
+            .height(500)
+            .renderDot(codigodot);
+        this.segundaC()
     }
+
+
+    segundaC(cabeza,nombre){
+        let aux=this.primero;
+        let contador=0;
+        let retornar=""
+        do{
+            console.log("-----USUARIO: "+aux.nombreUsuario);
+            if (aux.nombreUsuario==nombre) {
+                retornar+=this.mostrarH(aux,cabeza)
+            }
+            aux=aux.siguiente;
+        }
+        while(aux!=this.primero)
+        return retornar
+    }
+    
+    mostrarH(usuario,cabeza){
+        let libU=usuario.abajo;
+        var codigodotH="";
+        let contador=0;
+        let uniones=""
+        while(libU!=null){
+            codigodotH+='nodu'+libU.nombreLibro+cabeza+'[label="'+libU.nombreLibro+'",fillcolor=white,group=0]'
+            console.log("---SUS LIBROS COMPRADOS: "+libU.nombreLibro);
+            libU=libU.siguiente;
+        }       
+        let libUs=usuario.abajo;
+        while(libUs!=null){
+            let aux=libUs.siguiente
+            if (aux!=null) {
+                uniones=uniones+'nodu'+libUs.nombreLibro+cabeza+'->'+'nodu'+aux.nombreLibro+cabeza+'[dir=forward color="black"]'    
+            }
+            
+            // codigodotH+='nodu'+libU.nombreLibro+'[label="'+libU.nombreLibro+'",fillcolor=white,group=0]'
+            // console.log("---SUS LIBROS COMPRADOS: "+libU.nombreLibro);
+            libUs=libUs.siguiente;
+            // contador++;
+        }
+        let primero=usuario.abajo;
+        if (primero!=null) {
+            uniones+=cabeza+'->'+'nodu'+primero.nombreLibro+cabeza+'\n'    
+        }
+        
+        // for (let index = 0; index < usuario.sizeLibros-1; index++) {
+        //     uniones=uniones+'nodu'+index+'->'+'nodu'+(index+1)+'[dir=forward color="black"]'
+        //     if (index==(this.size-2)) {
+        //         alineacion+='nodu'+index+',';
+        //         alineacion+='nodu'+(index+1);
+        //     }else{
+        //         alineacion+='nodu'+index+','
+        //     }
+            
+        // }
+        codigodotH=codigodotH+uniones
+        console.log(codigodotH);
+        return codigodotH 
+        // codigodotH=codigodotH+'}}'
+        
+    }
+
+    // var auxLibro=aux.abajo;
+    //         codigodotL=codigodotL+'nodo'+contador+usuario+'[label="'+auxLibro.nombreLibro+'",fillcolor=white,group=0]'
+    //         auxLibro=auxLibro.siguiente;
+
+    // graficaListaListas(){
+    //     let aux=this.primero;
+    //     do{
+    //         if (aux.nombreUsuario==usuario) {
+    //             console.log("----------USUARIO:  "+usuario+" ---------------");
+    //             var auxLibro=aux.abajo;
+    //             do{
+    //                 if (auxLibro==null) {
+    //                     return
+    //                 }
+    //                 console.log(auxLibro.nombreLibro);
+    //                 auxLibro=auxLibro.siguiente;
+    //             }while(auxLibro!=aux.abajo);
+    //             return
+    //         }
+    //         aux=aux.siguiente;
+    //         if (aux==this.primero) {
+    //             console.log("No se encontro el libro")
+    //         }
+    //     }
+    //     while(aux!=this.primero)
+    // }
 
     buscarUsuario(usuario,password){
         let aux=this.primero;
@@ -303,30 +431,31 @@ function handleFiles(e) {
     let lector = new FileReader();
     lector.onload = function(e) {
         let contenido = e.target.result;
-        let matriz= new MatrizOrtogonal()
+        let matriz= new MatrizOrtogonal();
         listaSimpLibros=new ListaLib();
         const libros = JSON.parse(contenido);
-
+        matriz.llenarmatrizortogonal();
         for (const x in libros) {
             let libro=libros[x]
             listaSimpLibros.agregarLibro(libro.isbn,libro.nombre_autor,libro.nombre_libro,libro.cantidad,libro.fila,libro.columna,libro.paginas,libro.categoria);
-            for (let x = 1; x < (3+1); x++) {
-               for (let y = 1; y < (3+1); y++) {
-                    if ((x==libro.fila)&&(y==libro.columna)) {
+            // for (let x = 1; x < (3+1); x++) {
+            //    for (let y = 1; y < (3+1); y++) {
+            //         if ((x==libro.fila)&&(y==libro.columna)) {
                         // console.log("libro insertado: "+libro.nombre_libro)
-                        matriz.insertarMatriz(libro.isbn,libro.nombre_autor,libro.nombre_libro,libro.cantidad,libro.fila,libro.columna,libro.paginas,libro.categoria,x,y);
-                    }else{
-                        matriz.insertarMatriz("null","null","null","null","null","null","null","null",x,y);
-                    }
+                        matriz.insercionmatriz(libro.isbn,libro.nombre_autor,libro.nombre_libro,libro.cantidad,libro.fila,libro.columna,libro.paginas,libro.categoria);
+                        // matriz.insertarMatriz(libro.isbn,libro.nombre_autor,libro.nombre_libro,libro.cantidad,libro.fila,libro.columna,libro.paginas,libro.categoria,x,y);
+            //         }else{
+            //             matriz.insertarMatriz("null","null","null","null","null","null","null","null",x,y);
+            //         }
                 
-               }
+            //    }
                 
-            }
+            // }
             
             
             // console.log(pitza.tipo, pitza.forma, pitza.costo);
         }
-        matriz.mostrarMatriz()
+        matriz.mostrarmatriz()
         listaSimpLibros.mostrarLibros();
     }
     
@@ -337,7 +466,7 @@ function handleFiles(e) {
 
 document.getElementById("fileupload").addEventListener("change", handleFiles, false);
 class NodoMatrizOrtogonal {
-    constructor(isbn, nombreAutor, nombreLibro, cantidad, fila, columna, paginas, categoria) {
+    constructor(isbn, nombreAutor, nombreLibro, cantidad, fila, columna, paginas, categoria,x,y) {
         this.isbn = isbn;
         this.nombreAutor = nombreAutor;
         this.nombreLibro = nombreLibro;
@@ -346,127 +475,230 @@ class NodoMatrizOrtogonal {
         this.columna = columna;
         this.paginas = paginas;
         this.categoria = categoria;
+        this.x=x;
+        this.y=y;
         this.arriba = null;
         this.abajo = null;
         this.siguiente = null;
         this.anterior = null;
     }
-
 }
 
-class MatrizOrtogonal {
-    constructor() {
-        this.primero = null;
-        this.contador=0;
+class ListaEncabezado{
+    constructor(){
+        this.primero = null
+        this.ultimo = null
     }
-
-    vacio(){
-        return this.primero==null;
-    }
-
-    insertarMatriz(isbn,nombreAutor,nombreLibro,cantidad,fila,columna,paginas,categoria,posx,posy){
-        // let nodoAux;
-        // let nodoAux2;
-        
-        if (this.vacio()) {
-            let nuevoNodo=new NodoMatrizOrtogonal(isbn,nombreAutor,nombreLibro,cantidad,fila,columna,paginas,categoria);
-            console.log("Nodo creado: "+nuevoNodo.nombreLibro+"pos: "+posx,posy)
-            this.primero=nuevoNodo;
-            this.contador++;
+    insertarlista(isbn, nombreAutor, nombreLibro, cantidad, fila, columna, paginas, categoria,x){
+        var temp = new NodoMatrizOrtogonal(isbn, nombreAutor, nombreLibro, cantidad, fila, columna, paginas, categoria,x,0);
+        if(this.primero == null){
+            this.primero = temp;
+            this.ultimo = temp;
         }else{
-            let aux=this.primero;
-            while (aux.abajo!=null) {
-                aux=aux.abajo
-            }
-            if (this.contador!=fila) {
-                this.contador++;
-                let nuevoNodo=new NodoMatrizOrtogonal(isbn,nombreAutor,nombreLibro,cantidad,fila,columna,paginas,categoria);
-                console.log("Nodo creado: "+nuevoNodo.nombreLibro+"pos: "+posx,posy)
-                aux.abajo=nuevoNodo;
-                nuevoNodo.arriba=aux;
-            }else{
-                while (aux.siguiente!=null) {
-                    aux=aux.siguiente;
-                }
-                let nuevoNodo=new NodoMatrizOrtogonal(isbn,nombreAutor,nombreLibro,cantidad,fila,columna,paginas,categoria);
-                console.log("Nodo creado: "+nuevoNodo.nombreLibro+"pos: "+posx,posy)
-                aux.siguiente=nuevoNodo;
-                nuevoNodo.anterior=aux;
-                if (this.contador>1) {
-                    let aux2=aux.arriba.siguiente;
-                    aux2.abajo=nuevoNodo;
-                    nuevoNodo.arriba=aux2
-                }
-            }
+            this.ultimo.siguiente = temp;
+            this.ultimo = temp;
         }
 
-        // for (let x = 0; x < sizeX; x++){
-        //     for (let y = 0; y < sizeY; y++){
-        //         let nuevoNodo= new NodoMatrizOrtogonal(isbn,nombreAutor,nombreLibro,cantidad,fila,columna,paginas,categoria);
-        //         if (y==0) {
-        //             if (this.primero==null) {
-        //                 this.primero=nuevoNodo;
-        //             }
-        //             nodoAux=nuevoNodo;
-        //             console.log(nodoAux)
-        //         }else{
-        //             nuevoNodo.anterior=nodoAux;
-        //             nodoAux.siguiente=nuevoNodo;
-        //             nodoAux=nuevoNodo;
-        //         }
-        //         if (x==0) {
-        //             nuevoNodo.arriba=null;
-        //             nodoAux=nuevoNodo;
-        //         } else {
-        //             nuevoNodo.arriba=nodoAux2;
-        //             nodoAux2.abajo=nuevoNodo;
-        //             nodoAux2=nodoAux2.siguiente;
-        //         }
-        //     }
-        //     nodoAux2=this.primero;
-        //     while (nodoAux2.abajo!=null) {
-        //         nodoAux2=nodoAux2.abajo
-        //     }
-        // }
+        var aux = this.ultimo
+        for (let posy = 24; posy >= 0; posy--) {
+           var nuevonodo = new NodoMatrizOrtogonal(isbn, nombreAutor, nombreLibro, cantidad, fila, columna, paginas, categoria,x,posy);
+           var auxanterior = this.ultimo.abajo
+           aux.abajo = nuevonodo
+           nuevonodo.abajo = auxanterior
+        }
     }
 
-    mostrarMatriz(){
-        let aux=this.primero;
-        let texto="";
-        while ((aux.abajo!=null) |(aux.siguiente!=null)) {
-            texto=texto+" "+aux.nombreLibro;
-            if (aux.siguiente!=null) {
-                aux=aux.siguiente;
-            }else{
-                texto=texto+"\n";
-                if (aux.abajo!=null) {
-                    aux=aux.abajo;
-                    while (aux.anterior!=null) {
-                        aux=aux.anterior;
-                    }
-                }
+    buscarlista(libro){
+        var temporal = this.primero
+        while(temporal != null){
+            if(temporal.x == libro){
+                return temporal;
             }
+            temporal =temporal.siguiente;
         }
-        texto=texto+" "+aux.nombreLibro;
-        console.log(texto);
-        return texto;
-    //     if (this.primero!=null) {
-    //         let temp=this.primero;
-    //         while (temp!=null) {
-    //             let aux=temp
-    //             while (aux!=null) {
-    //                 console.log("Pos: "+aux.nombreLibro);
-    //                 aux=aux.siguiente;
-    //             }
-    //             temp=temp.abajo;
-    //             // console.log("-------------SIGUIENTEE FILAAA-------------")
-    //         }
-    //     } else {
-    //         console.log("MATRIZ VACIA")
-    //     }
-    // }
+        return null
     }
 }
+
+class MatrizOrtogonal{
+    constructor(){
+        this.listahorizontal = new ListaEncabezado();
+    }
+
+    llenarmatrizortogonal(){
+        for (let index = 0; index < 25; index++) {
+            this.listahorizontal.insertarlista("", "", "", "", "", "", "","",index)
+        }
+    }
+    mostrarmatriz(){
+        var posx = 0
+        var dotMatriz='digraph L{\n node[shape=box fillcolor="#FFEDBB" style=filled]\n subgraph cluster_p{ \n label ="Libros de Fantasia"\n bgcolor="#398D9C"\n edge[dir="both"] \n'
+        let uniones=""
+        var cabecerax = this.listahorizontal.buscarlista(posx)
+        while(cabecerax != null){
+            let alineacion="{rank=same;"
+            console.log("**************** x="+posx+"******************")
+            var numy = 0
+            var tempy = cabecerax.abajo
+            while(tempy != null){
+                console.log(tempy)
+                dotMatriz+='nodo'+tempy.x+'_'+tempy.y+'[label="'+tempy.nombreLibro+'",fillcolor=white,group=0] \n'
+                console.log(tempy.nombreLibro+"("+tempy.x+","+tempy.y+")")
+                if (tempy.abajo!=null) {
+                    let auxUnion=tempy.abajo
+                    uniones+='nodo'+tempy.x+'_'+tempy.y+'->'+'nodo'+auxUnion.x+'_'+auxUnion.y+'[dir=both color="black"] \n'
+                }
+                if (tempy.abajo==null) {
+                    alineacion+='nodo'+tempy.x+'_'+tempy.y
+                }else{
+                    alineacion+='nodo'+tempy.x+'_'+tempy.y+','
+                }
+                tempy = tempy.abajo
+            }
+            posx++
+            dotMatriz+=alineacion+'}\n'
+            cabecerax = cabecerax.siguiente
+        }
+        dotMatriz+=uniones
+        dotMatriz+='}}'
+        console.log(dotMatriz)
+        d3.select("#matriz").graphviz()
+            .width(500)
+            .height(500)
+            .renderDot(dotMatriz);
+    }
+    insercionmatriz(isbn, nombreAutor, nombreLibro, cantidad, fila, columna, paginas, categoria){
+        var temporalx = this.listahorizontal.buscarlista(fila)
+        var temporaly = temporalx.abajo
+        while(temporaly != null){
+            if(temporaly.y == columna){
+                temporaly.isbn=isbn;
+                temporaly.nombreAutor=nombreAutor;
+                temporaly.nombreLibro=nombreLibro;
+                temporaly.cantidad=cantidad;
+                temporaly.paginas=paginas;
+                temporaly.categoria=categoria;
+                return
+            }
+            temporaly = temporaly.abajo
+        }
+    }
+
+}
+
+// class MatrizOrtogonal {
+//     constructor() {
+//         this.primero = null;
+//         this.contador=0;
+//     }
+
+//     vacio(){
+//         return this.primero==null;
+//     }
+
+//     insertarMatriz(isbn,nombreAutor,nombreLibro,cantidad,fila,columna,paginas,categoria,posx,posy){
+//         // let nodoAux;
+//         // let nodoAux2;
+        
+//         if (this.vacio()) {
+//             let nuevoNodo=new NodoMatrizOrtogonal(isbn,nombreAutor,nombreLibro,cantidad,fila,columna,paginas,categoria);
+//             console.log("Nodo creado: "+nuevoNodo.nombreLibro+"pos: "+posx,posy)
+//             this.primero=nuevoNodo;
+//             this.contador++;
+//         }else{
+//             let aux=this.primero;
+//             while (aux.abajo!=null) {
+//                 aux=aux.abajo
+//             }
+//             if (this.contador!=fila) {
+//                 this.contador++;
+//                 let nuevoNodo=new NodoMatrizOrtogonal(isbn,nombreAutor,nombreLibro,cantidad,fila,columna,paginas,categoria);
+//                 console.log("Nodo creado: "+nuevoNodo.nombreLibro+"pos: "+posx,posy)
+//                 aux.abajo=nuevoNodo;
+//                 nuevoNodo.arriba=aux;
+//             }else{
+//                 while (aux.siguiente!=null) {
+//                     aux=aux.siguiente;
+//                 }
+//                 let nuevoNodo=new NodoMatrizOrtogonal(isbn,nombreAutor,nombreLibro,cantidad,fila,columna,paginas,categoria);
+//                 console.log("Nodo creado: "+nuevoNodo.nombreLibro+"pos: "+posx,posy)
+//                 aux.siguiente=nuevoNodo;
+//                 nuevoNodo.anterior=aux;
+//                 if (this.contador>1) {
+//                     let aux2=aux.arriba.siguiente;
+//                     aux2.abajo=nuevoNodo;
+//                     nuevoNodo.arriba=aux2
+//                 }
+//             }
+//         }
+
+//         // for (let x = 0; x < sizeX; x++){
+//         //     for (let y = 0; y < sizeY; y++){
+//         //         let nuevoNodo= new NodoMatrizOrtogonal(isbn,nombreAutor,nombreLibro,cantidad,fila,columna,paginas,categoria);
+//         //         if (y==0) {
+//         //             if (this.primero==null) {
+//         //                 this.primero=nuevoNodo;
+//         //             }
+//         //             nodoAux=nuevoNodo;
+//         //             console.log(nodoAux)
+//         //         }else{
+//         //             nuevoNodo.anterior=nodoAux;
+//         //             nodoAux.siguiente=nuevoNodo;
+//         //             nodoAux=nuevoNodo;
+//         //         }
+//         //         if (x==0) {
+//         //             nuevoNodo.arriba=null;
+//         //             nodoAux=nuevoNodo;
+//         //         } else {
+//         //             nuevoNodo.arriba=nodoAux2;
+//         //             nodoAux2.abajo=nuevoNodo;
+//         //             nodoAux2=nodoAux2.siguiente;
+//         //         }
+//         //     }
+//         //     nodoAux2=this.primero;
+//         //     while (nodoAux2.abajo!=null) {
+//         //         nodoAux2=nodoAux2.abajo
+//         //     }
+//         // }
+//     }
+
+    // mostrarMatriz(){
+    //     let aux=this.primero;
+    //     let texto="";
+    //     while ((aux.abajo!=null) |(aux.siguiente!=null)) {
+    //         texto=texto+" "+aux.nombreLibro;
+    //         if (aux.siguiente!=null) {
+    //             aux=aux.siguiente;
+    //         }else{
+    //             texto=texto+"\n";
+    //             if (aux.abajo!=null) {
+    //                 aux=aux.abajo;
+    //                 while (aux.anterior!=null) {
+    //                     aux=aux.anterior;
+    //                 }
+    //             }
+    //         }
+    //     }
+    //     texto=texto+" "+aux.nombreLibro;
+    //     console.log(texto);
+    //     return texto;
+    // //     if (this.primero!=null) {
+    // //         let temp=this.primero;
+    // //         while (temp!=null) {
+    // //             let aux=temp
+    // //             while (aux!=null) {
+    // //                 console.log("Pos: "+aux.nombreLibro);
+    // //                 aux=aux.siguiente;
+    // //             }
+    // //             temp=temp.abajo;
+    // //             // console.log("-------------SIGUIENTEE FILAAA-------------")
+    // //         }
+    // //     } else {
+    // //         console.log("MATRIZ VACIA")
+    // //     }
+    // // }
+    // }
+// }
 //---------------------------------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------COLA DE ESPERA PARA LIBROS-------------------------------------

@@ -161,3 +161,14 @@ footer li{
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;      
 }
+
+#grafica{
+  height: 200px;
+  width: 300px;
+  background-color: white;
+}
+#matriz{
+  height: 200px;
+  width: 300px;
+  background-color: white;
+}

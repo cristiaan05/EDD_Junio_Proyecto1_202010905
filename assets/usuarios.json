@@ -14,7 +14,7 @@
         "nombre_usuario":  "Booker",
         "correo":  "vookerbaird@bitrex.com",
         "rol":  "Administrador",
-        "contrasenia":  "labore",
+        "contrasenia":  "123",
         "telefono": "+502 (871) 424-3154"
     },
     {
@@ -23,7 +23,7 @@
         "nombre_usuario":  "Stokes",
         "correo":  "stokesgraves@bitrex.com",
         "rol":  "Usuario",
-        "contrasenia":  "Lorem",
+        "contrasenia":  "123",
         "telefono":"+502 (935) 532-2941"
     },
     {
@@ -32,7 +32,7 @@
         "nombre_usuario":  "Josefa",
         "correo":  "josefaerickson@bitrex.com",
         "rol":  "Administrador",
-        "contrasenia":  "dolore",
+        "contrasenia":  "123",
         "telefono": "+502 (900) 538-3904"
     }
 ]
