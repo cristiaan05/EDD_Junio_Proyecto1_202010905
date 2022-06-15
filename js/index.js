@@ -432,6 +432,7 @@ function handleFiles(e) {
     lector.onload = function(e) {
         let contenido = e.target.result;
         let matriz= new MatrizOrtogonal();
+        let matrizD=new ListaMatriz();
         listaSimpLibros=new ListaLib();
         const libros = JSON.parse(contenido);
         matriz.llenarmatrizortogonal();
@@ -442,6 +443,7 @@ function handleFiles(e) {
             //    for (let y = 1; y < (3+1); y++) {
             //         if ((x==libro.fila)&&(y==libro.columna)) {
                         // console.log("libro insertado: "+libro.nombre_libro)
+                        matrizD.insertar(libro.fila,libro.columna,libro.isbn,libro.nombre_autor,libro.nombre_libro,libro.cantidad,libro.fila,libro.columna,libro.paginas,libro.categoria)
                         matriz.insercionmatriz(libro.isbn,libro.nombre_autor,libro.nombre_libro,libro.cantidad,libro.fila,libro.columna,libro.paginas,libro.categoria);
                         // matriz.insertarMatriz(libro.isbn,libro.nombre_autor,libro.nombre_libro,libro.cantidad,libro.fila,libro.columna,libro.paginas,libro.categoria,x,y);
             //         }else{
@@ -456,6 +458,7 @@ function handleFiles(e) {
             // console.log(pitza.tipo, pitza.forma, pitza.costo);
         }
         matriz.mostrarmatriz()
+        matrizD.mostrarMatriz()
         listaSimpLibros.mostrarLibros();
     }
     
@@ -537,13 +540,13 @@ class MatrizOrtogonal{
         var cabecerax = this.listahorizontal.buscarlista(posx)
         while(cabecerax != null){
             let alineacion="{rank=same;"
-            console.log("**************** x="+posx+"******************")
+            // console.log("**************** x="+posx+"******************")
             var numy = 0
             var tempy = cabecerax.abajo
             while(tempy != null){
-                console.log(tempy)
+                // console.log(tempy)
                 dotMatriz+='nodo'+tempy.x+'_'+tempy.y+'[label="'+tempy.nombreLibro+'",fillcolor=white,group=0] \n'
-                console.log(tempy.nombreLibro+"("+tempy.x+","+tempy.y+")")
+                // console.log(tempy.nombreLibro+"("+tempy.x+","+tempy.y+")")
                 if (tempy.abajo!=null) {
                     let auxUnion=tempy.abajo
                     uniones+='nodo'+tempy.x+'_'+tempy.y+'->'+'nodo'+auxUnion.x+'_'+auxUnion.y+'[dir=both color="black"] \n'
@@ -554,6 +557,11 @@ class MatrizOrtogonal{
                     alineacion+='nodo'+tempy.x+'_'+tempy.y+','
                 }
                 tempy = tempy.abajo
+                if (cabecerax.siguiente!=null) {
+                    uniones+='nodo'+posx+'_'+numy+'->'+'nodo'+(posx+1)+'_'+numy+'[dir=both color="black"] \n';
+                    // console.log("nodo"+posx+'_'+numy+"-->"+'nodo'+(posx+1)+'_'+numy);
+                }
+                numy++
             }
             posx++
             dotMatriz+=alineacion+'}\n'
@@ -563,8 +571,8 @@ class MatrizOrtogonal{
         dotMatriz+='}}'
         console.log(dotMatriz)
         d3.select("#matriz").graphviz()
-            .width(500)
-            .height(500)
+            .width(1500)
+            .height(1500)
             .renderDot(dotMatriz);
     }
     insercionmatriz(isbn, nombreAutor, nombreLibro, cantidad, fila, columna, paginas, categoria){
@@ -700,6 +708,326 @@ class MatrizOrtogonal{
     // }
 // }
 //---------------------------------------------------------------------------------------------------------------------------------------
+
+//--------------------------------------------------MATRIZ DISPERSA PARA LIBROS THRILLER-------------------------------------------------
+class NodoCabezera{
+    constructor(id){
+        this.id=id;
+        this.siguiente=null;
+        this.anterior=null;
+        this.acceso=null;
+    }
+
+    getAcceso(){
+        return this.acceso;
+    }
+
+    setAcceso(nuevoAcceso){
+        this.acceso=nuevoAcceso;
+    }
+}
+
+class NodoMatriz{
+    constructor(isbn, nombreAutor, nombreLibro, cantidad, fila, columna, paginas, categoria,x,y){
+        this.isbn=isbn;
+        this.nombreAutor=nombreAutor;
+        this.nombreLibro=nombreLibro;
+        this.cantidad=cantidad;
+        this.fila=fila;
+        this.columna=columna;
+        this.paginas=paginas;
+        this.categoria=categoria;
+        this.coordenadaX=x;
+        this.coordenadaY=y;
+        this.arriba=null;
+        this.abajo=null;
+        this.derecha=null;
+        this.izquierda=null;
+    }
+
+    setArriba(arriba){
+        this.arriba=arriba;
+    }
+
+    getArriba(){
+        return this.arriba;
+    }
+    setAbajo(abajo){
+        this.abajo=abajo;
+    }
+    getAbajo(){
+        return this.abajo;
+    }
+    setDerecha(derecha){
+        this.derecha=derecha;
+    }
+    getDerecha(){
+        return this.derecha;
+    }
+    setIzquierda(izquierda){
+        this.izquierda=izquierda;
+    }
+    getIzquierda(){
+        return this.izquierda;
+    }
+}
+
+class ListaCabeceras{
+    constructor(tipo){
+        this.primero=null;
+        this.ultimo=null;
+        this.tipo=tipo;
+        this.size=0;
+    }
+
+    insertarNodoCabecera(nuevoNodoC){
+        this.size++;
+        if (this.primero==null) {
+            this.primero=nuevoNodoC;
+            this.ultimo=nuevoNodoC
+        }else{
+            // console.log(nuevoNodoC)
+            //verificamos si esta en orden 
+            if (parseInt(nuevoNodoC.id)<parseInt(this.primero.id)) {
+                nuevoNodoC.siguiente=this.primero;
+                this.primero.anterior=nuevoNodoC;
+                this.primero=nuevoNodoC
+            }
+            else if (parseInt(nuevoNodoC.id)>parseInt(this.ultimo.id)) {
+                this.ultimo.siguiente=nuevoNodoC;
+                nuevoNodoC.anterior=this.ultimo;
+                this.ultimo=nuevoNodoC;
+            }else{
+                let temp=this.primero;
+                while (temp!=null) {
+                    if (parseInt(nuevoNodoC.id)<parseInt(temp.id)) {
+                        nuevoNodoC.siguiente=temp;
+                        nuevoNodoC.anterior=temp.anterior;
+                        temp.anterior.siguiente=nuevoNodoC;
+                        temp.anterior=nuevoNodoC;
+                    }else if (parseInt(nuevoNodoC.id)>parseInt(temp.id)) {
+                        temp=temp.siguiente;
+                    }else{
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    mostrarCabeceras(){
+        temp=this.primero;
+        while (temp!=null) {
+            console.log('Cabecera'+this.tipo+temp.id)
+        }
+    }
+
+    getCabecera(id){
+        let temp=this.primero;
+        while (temp!=null) {
+            if (id==temp.id) {
+                return temp;
+            }
+            temp=temp.siguiente;
+        }
+        return null
+    }
+    getCabeceraXFila(id){
+        let temp=this.primero;
+        while (temp!=null) {
+            if (id==temp.id) {
+                return temp;
+            }
+            temp=temp.siguiente;
+        }
+        return null;
+    }
+}
+
+class ListaMatriz{
+    constructor(){
+        this.capa=0
+        this.filas=new ListaCabeceras('fila');
+        this.columnas=new ListaCabeceras('columna');
+        this.inicio=0;
+    }
+
+    insertar(posx,posy,isbn, nombreAutor, nombreLibro, cantidad, fila, columna, paginas, categoria){
+        let nuevaCelda=new NodoMatriz(isbn,nombreAutor,nombreLibro,cantidad,fila,columna,paginas,categoria,posx,posy);
+        this.inicio=nuevaCelda;
+
+        //buscar si existen las cabeceras en la matriz;
+        let nodoX=this.filas.getCabecera(posx);
+        let nodoY=this.columnas.getCabecera(posy);
+
+        //comprobamos que la cabecera fila posX exista
+        if (nodoX==null) {
+            nodoX=new NodoCabezera(posx); //si nodox es nulo quiere decir que no existe cabecera fila posx
+            this.filas.insertarNodoCabecera(nodoX);
+        }
+        if (nodoY==null) {
+            nodoY=new NodoCabezera(posy);
+            //si nodo_Y es nulo, quiere decir que no existe  columna pos_y
+            this.columnas.insertarNodoCabecera(nodoY);
+        }
+        // insertar nueva celda en fila
+        if (nodoX.getAcceso()==null) {
+            nodoX.setAcceso(nuevaCelda)
+        }else{
+            if (parseInt(nuevaCelda.coordenadaY)<parseInt(nodoX.getAcceso().coordenadaY)) {
+                nuevaCelda.setDerecha(nodoX.getAcceso());
+                nodoX.getAcceso().setIzquierda(nuevaCelda);
+                nodoX.setAcceso(nuevaCelda);
+            }else{
+                //de no cumplirse debemos movernos de izquierda a derecha buscando donde posicionar el nueva_celda nodoInterno
+                let tmp=nodoX.getAcceso();
+                while (tmp!=null) {
+                    if (parseInt(nuevaCelda.coordenadaY)<parseInt(tmp.coordenadaY)) {
+                        nuevaCelda.setDerecha(tmp);
+                        nuevaCelda.setIzquierda(tmp.getIzquierda());
+                        tmp.getIzquierda().setDerecha(nuevaCelda);
+                        tmp.setIzquierda(nuevaCelda);
+                        break;
+                    }else if ((parseInt(nuevaCelda.coordenadaX)==parseInt(tmp.coordenadaX))&& (parseInt(nuevaCelda.coordenadaY)==parseInt(tmp.coordenadaY))) {
+                        tmp.isbn=nuevaCelda.isbn;
+                        tmp.nombreAutor=nuevaCelda.nombreAutor;
+                        tmp.cantidad=nuevaCelda.cantidad;
+                        tmp.fila=nuevaCelda.fila;
+                        tmp.columna=nuevaCelda.columna;
+                        tmp.paginas=nuevaCelda.paginas;
+                        tmp.categoria=nuevaCelda.categoria;
+                        break;
+                    }else{
+                        if (tmp.getDerecha()==null) {
+                            tmp.setDerecha(nuevaCelda)
+                            nuevaCelda.setIzquierda(tmp);
+                            break;
+                        }else{
+                            tmp=tmp.getDerecha()
+                        }
+                    }
+                }
+            }
+        }
+
+        //INSERTAR NUEVACELDA EN COLUMNA
+        if (nodoY.getAcceso()==null) {
+            nodoY.setAcceso(nuevaCelda);
+        }else{//si esta apuntando, validamos si la posicion de la fila del nueva_celda nodoCelda es menor a la posicion de la fila del acceso 
+            if (parseInt(nuevaCelda.coordenadaX)<parseInt(nodoY.getAcceso().coordenadaX)) {
+                nuevaCelda.setAbajo(nodoY.getAcceso())
+                nodoY.getAcceso().setArriba(nuevaCelda)
+                nodoY.setAcceso(nuevaCelda);
+            }else{
+                //de no cumplirse, debemos movernos de arriba hacia abajo buscando donde posicionar el nueva_celda
+                let tmp2=nodoY.getAcceso();
+                while (tmp2!=null) {
+                    if (parseInt(nuevaCelda.coordenadaX)<parseInt(tmp2.coordenadaX)) {
+                        nuevaCelda.setAbajo(tmp2);
+                        nuevaCelda.setArriba(tmp2.getArriba())
+                        tmp2.getArriba().setAbajo(nuevaCelda)
+                        tmp2.setArriba(nuevaCelda);
+                        break;
+                    }else if ((parseInt(nuevaCelda.coordenadaX)==parseInt(tmp2.coordenadaX))&&(parseInt(nuevaCelda.coordenadaY)==parseInt(tmp2.coordenadaY))) {
+                        tmp2.isbn=nuevaCelda.isbn;
+                        tmp2.nombreAutor=nuevaCelda.nombreAutor;
+                        tmp2.cantidad=nuevaCelda.cantidad;
+                        tmp2.fila=nuevaCelda.fila;
+                        tmp2.columna=nuevaCelda.columna;
+                        tmp2.paginas=nuevaCelda.paginas;
+                        tmp2.categoria=nuevaCelda.categoria;
+                        break;
+                    }else{
+                        if (tmp2.getAbajo()==null) {
+                            tmp2.setAbajo(nuevaCelda)
+                            nuevaCelda.setArriba(tmp2)
+                            break;
+                        } else {
+                            tmp2=tmp2.getAbajo()
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
+    recorridoPorFila(fila){
+        let inicio = this.filas.getCabecera(fila)
+        if (inicio == null){
+            console.log('Esa coordenada de filas no existe')
+            return null
+        }
+        let tmp = inicio.getAcceso()
+        // #tmp = this.filas.getCabecera(fila).getAcceso()
+        while (tmp != None){
+            console.log(tmp.caracter)
+            tmp = tmp.getDerecha()
+        }
+    }
+    
+    recorridoPorColumna(columna){
+        let inicio= this.columnas.getCabecera(columna)
+        if (inicio == null){
+            console.log('Esa coordenada de columna no existe')
+            return null
+        }
+        let tmp = inicio.getAcceso()
+        // #tmp = this.filas.getCabecera(fila).getAcceso()
+        while (tmp != null){
+            console.log(tmp.nombreLibro)
+            tmp = tmp.getAbajo()
+        }
+    }
+
+    mostrarMatriz(){
+        let gg=this.filas.primero;
+        for (let x = 0; x < this.filas.size; x++) {
+            let inicio=this.filas.getCabeceraXFila(gg.id);
+            if (inicio==null) {
+                console.log("Esa coordenada de columna no existe")
+                return null
+            }else{
+                let tmp=inicio.getAcceso()
+                while (tmp!=null) {
+                    console.log("X "+tmp.coordenadaX,"Y "+tmp.coordenadaY,"---"+tmp.nombreLibro);
+                    tmp=tmp.getDerecha()
+                }
+            }
+            gg=gg.siguiente;
+        }
+    }
+
+    graficarDisperza(){
+        let gg=this.filas.primero
+        let graphviz=""
+        for (let x = 0; x < this.size; x++){
+            let inicio = this.filas.getCabeceraXFila(gg.id)
+            if (inicio == null){
+                console.log('Esa coordenada de columna no existe')
+                return null
+            }
+            else{
+                let tmp= inicio.getAcceso()
+                // #tmp = this.filas.getCabecera(fila).getAcceso()
+                while (tmp != null){
+                        graphviz+='nodo'+tmp.coordenadaX+'_'+tmp.coordenadaY+'[label="'+tmp.nombreLibro+'",fillcolor=white,group=0]'
+                    // # print("X "+tmp.coordenadaX,"Y "+tmp.coordenadaY,"---"+tmp.caracter)
+                    tmp = tmp.getDerecha()
+                }
+
+            }
+            gg=gg.siguiente
+        }
+        return graphviz
+    }
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------------------------
+
+
+
 
 //----------------------------------------COLA DE ESPERA PARA LIBROS-------------------------------------
 class NodoCola{
