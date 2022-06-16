@@ -1,14 +1,14 @@
-$(document).ready(function () {
-    $('.modal').modal();
-    $('.sidenav').sidenav();
-    $('.parallax').parallax();
-    $('.myreviews').carousel({
-        numVisible: 7,
-        shift: 55,
-        padding: 55,
-    });
-    $('.slider').slider({ full_width: true });
-});
+// $(document).ready(function () {
+//     $('.modal').modal();
+//     $('.sidenav').sidenav();
+//     $('.parallax').parallax();
+//     $('.myreviews').carousel({
+//         numVisible: 7,
+//         shift: 55,
+//         padding: 55,
+//     });
+//     $('.slider').slider({ full_width: true });
+// });
 
 function ocultarHome() {
     document.getElementById("home").style.display = "none";
@@ -80,7 +80,6 @@ function cargarLibros() {
 }
 
 function graficaLista() {
-    console.log("sfasdf")
     let nombreUsuairo=localStorage.getItem("usuario");
     listaListas.mostrarLibrosUsuario(JSON.parse(nombreUsuairo));
 }
@@ -407,7 +406,6 @@ class ListaLib{
     }
 
     mostrarLibros(){
-        console.log("hola");
         let aux=this.primero;
         var select=document.getElementById("selectMenu")
         select.innerHTML='<option selected>Escoge el Nombre del Libro</option>'
@@ -438,13 +436,14 @@ function handleFiles(e) {
         matriz.llenarmatrizortogonal();
         for (const x in libros) {
             let libro=libros[x]
+            
             listaSimpLibros.agregarLibro(libro.isbn,libro.nombre_autor,libro.nombre_libro,libro.cantidad,libro.fila,libro.columna,libro.paginas,libro.categoria);
             // for (let x = 1; x < (3+1); x++) {
             //    for (let y = 1; y < (3+1); y++) {
             //         if ((x==libro.fila)&&(y==libro.columna)) {
                         // console.log("libro insertado: "+libro.nombre_libro)
-                        matrizD.insertar(libro.fila,libro.columna,libro.isbn,libro.nombre_autor,libro.nombre_libro,libro.cantidad,libro.fila,libro.columna,libro.paginas,libro.categoria)
-                        matriz.insercionmatriz(libro.isbn,libro.nombre_autor,libro.nombre_libro,libro.cantidad,libro.fila,libro.columna,libro.paginas,libro.categoria);
+            matrizD.insertar(libro.fila,libro.columna,libro.isbn,libro.nombre_autor,libro.nombre_libro,libro.cantidad,libro.fila,libro.columna,libro.paginas,libro.categoria)
+            matriz.insercionmatriz(libro.isbn,libro.nombre_autor,libro.nombre_libro,libro.cantidad,libro.fila,libro.columna,libro.paginas,libro.categoria);
                         // matriz.insertarMatriz(libro.isbn,libro.nombre_autor,libro.nombre_libro,libro.cantidad,libro.fila,libro.columna,libro.paginas,libro.categoria,x,y);
             //         }else{
             //             matriz.insertarMatriz("null","null","null","null","null","null","null","null",x,y);
@@ -459,6 +458,7 @@ function handleFiles(e) {
         }
         matriz.mostrarmatriz()
         matrizD.mostrarMatriz()
+        matrizD.generarGraphviz()
         listaSimpLibros.mostrarLibros();
     }
     
@@ -480,10 +480,8 @@ class NodoMatrizOrtogonal {
         this.categoria = categoria;
         this.x=x;
         this.y=y;
-        this.arriba = null;
         this.abajo = null;
         this.siguiente = null;
-        this.anterior = null;
     }
 }
 
@@ -569,7 +567,7 @@ class MatrizOrtogonal{
         }
         dotMatriz+=uniones
         dotMatriz+='}}'
-        console.log(dotMatriz)
+        // console.log(dotMatriz)
         d3.select("#matriz").graphviz()
             .width(1500)
             .height(1500)
@@ -805,6 +803,7 @@ class ListaCabeceras{
                         nuevoNodoC.anterior=temp.anterior;
                         temp.anterior.siguiente=nuevoNodoC;
                         temp.anterior=nuevoNodoC;
+                        break;
                     }else if (parseInt(nuevoNodoC.id)>parseInt(temp.id)) {
                         temp=temp.siguiente;
                     }else{
@@ -881,6 +880,7 @@ class ListaMatriz{
             }else{
                 //de no cumplirse debemos movernos de izquierda a derecha buscando donde posicionar el nueva_celda nodoInterno
                 let tmp=nodoX.getAcceso();
+                console.log(tmp)
                 while (tmp!=null) {
                     if (parseInt(nuevaCelda.coordenadaY)<parseInt(tmp.coordenadaY)) {
                         nuevaCelda.setDerecha(tmp);
@@ -997,31 +997,122 @@ class ListaMatriz{
             gg=gg.siguiente;
         }
     }
-
+    
     graficarDisperza(){
         let gg=this.filas.primero
-        let graphviz=""
-        for (let x = 0; x < this.size; x++){
+        let graphviz=''
+        let dimen=0;
+        let dimeny=0;
+        let cabeceras=''
+        for (let x = 0; x < this.filas.size; x++){
+            console.log("size: "+gg.id)
             let inicio = this.filas.getCabeceraXFila(gg.id)
             if (inicio == null){
                 console.log('Esa coordenada de columna no existe')
                 return null
             }
             else{
+                dimen=gg.id
                 let tmp= inicio.getAcceso()
                 // #tmp = this.filas.getCabecera(fila).getAcceso()
                 while (tmp != null){
                         graphviz+='nodo'+tmp.coordenadaX+'_'+tmp.coordenadaY+'[label="'+tmp.nombreLibro+'",fillcolor=white,group=0]'
                     // # print("X "+tmp.coordenadaX,"Y "+tmp.coordenadaY,"---"+tmp.caracter)
+                    dimeny=tmp.coordenadaY
                     tmp = tmp.getDerecha()
+                   
                 }
 
             }
+            
             gg=gg.siguiente
+            
         }
-        return graphviz
+        for (let index = 1; index < dimen+1; index++) {
+            for (let y = 1; y < dimeny+1; y++) {
+                console.log("cabecera: "+index+","+y)
+                cabeceras+='nodoC'+index+'_'+y+'[label="'+index+','+y+'",fillcolor=white,group=0]'
+            }
+            
+        }
+        cabeceras+=graphviz
+        // console.log("Dimension: "+dimen+" -"+dimeny)
+        // console.log(graphviz)
+        return [cabeceras,dimen,dimeny]
     }
+
+
+    generarGraphviz(){
+        // # print("m",m,n)
+        let gra=this.graficarDisperza()
+        let tamM=gra[1]
+        let tamN=gra[2]
+        let m=parseInt(tamM)+1
+        let n=parseInt(tamN)+1
+        let x="hola"
+        
+        // # print(posiciones.mostrarAzulejosPatron())
+        // # print("hola")
+        
+        let graphviz='digraph L{ node[shape=box fillcolor="#FFEDBB" style=filled] subgraph cluster_p{ label ="LIBROS THRILLER" bgcolor="#398D9C" edge[dir="none"]'
+        let g=gra[0]
+        graphviz=graphviz+g
+        for (let fi = 1; fi < parseInt(m); fi++) {
+            let grupo=2
+            for (let col = 1; col < parseInt(n); col++) {
+                if (parseInt(grupo)<parseInt(n)) {
+                    graphviz+='nodo'+fi+'_'+col+'->nodo'+fi+'_'+grupo+'[dir=both color="#black"]'
+                    grupo++;
+                }
+            }
+                
+        }
+
+        for (let fi = 1; fi < parseInt(m); fi++) {
+            graphviz+='{rank=same;'
+            let grupo=2;
+            for (let col = 1; col < parseInt(n); col++) {
+                if (parseInt(col)<parseInt(n-1)) {
+                    graphviz+='nodo'+fi+'_'+col+','
+                    grupo++
+                }else{
+                    graphviz+=' nodo'+fi+'_'+col
+                }
+            }
+            graphviz+='}'
+        }
+
+        // ## AQUI ENLAZAMOS LAS COLUMNAS
+        for (let col = 1; col < parseInt(n); col++) {
+            let fila=2;
+            for (let fi = 1; fi < parseInt(m-1); fi++) {
+               graphviz+='nodo'+fi+'_'+col+'->nodo'+fila+'_'+col+'[dir=both color="#black"];'
+                fila++;
+            }
+            
+        }
+        graphviz+='}}'
+        console.log(graphviz)
+     }    
+        
+        // # for col in range(1,int(n)):
+        // #     # grupo=2
+        // #     for fi in range(1,int(m)):
+        // #         grupo=2
+        // #         if int(grupo)<int(m-1):  
+        // #             graphviz=graphviz+'''
+        // #                 nodo'''+str(fi)+'''_'''+str(col)+'''->nodo'''+str(grupo)+'''_'''+str(col)+'''[dir=none color="#398D9C"]
+        // #             '''
+        // #             grupo=grupo+1
+        // graphviz=graphviz+'} }'
 }
+        
+        
+               
+                
+                
+                
+      
 
 
 //----------------------------------------------------------------------------------------------------------------------------------------
