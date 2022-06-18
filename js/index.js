@@ -1,14 +1,14 @@
-// $(document).ready(function () {
-//     $('.modal').modal();
-//     $('.sidenav').sidenav();
-//     $('.parallax').parallax();
-//     $('.myreviews').carousel({
-//         numVisible: 7,
-//         shift: 55,
-//         padding: 55,
-//     });
-//     $('.slider').slider({ full_width: true });
-// });
+$(document).ready(function () {
+    $('.modal').modal();
+    $('.sidenav').sidenav();
+    $('.parallax').parallax();
+    $('.myreviews').carousel({
+        numVisible: 7,
+        shift: 55,
+        padding: 55,
+    });
+    $('.slider').slider({ full_width: true });
+});
 
 function ocultarHome() {
     document.getElementById("home").style.display = "none";
@@ -30,6 +30,8 @@ function comprarLibro(event){
     let nombreUsuairo=localStorage.getItem("usuario");
     let libro=document.getElementById("selectMenu").value;
     let cantidad=document.getElementById("cantidad").value;
+    
+    listaDobleC.insertar(JSON.parse(nombreUsuairo),10,parseInt(cantidad))
     // console.log(,libro);
     
     if (listaSimpLibros.cantidadLibro(libro)>=cantidad) {
@@ -39,7 +41,7 @@ function comprarLibro(event){
         let cola=new Cola();
         cola.encolar(JSON.parse(nombreUsuairo),libro,cantidad);
     }
-
+    listaDobleC.mostrarUsuarios()
 }
 
 function login(event) {
@@ -85,6 +87,8 @@ function graficaLista() {
 }
 var listaListas;
 var listaSimpLibros;
+var listaDobleC;
+
 // --------------------------------CODIGO---------LISTA DE LISTAS------------------------------------------------------------------------------
 class NodoUsuario {
     constructor(dpi,nombreCompleto,nombreUsuario,correo,rol,password,telefono){
@@ -140,7 +144,7 @@ class ListaUsuariosLibros{
     agregarLibro(usuario,nombreLibro,cantidad){
         let tempUser=this.primero;
         do{
-            console.log("entre aqui")
+            // console.log("entre aqui")
             if (tempUser.nombreUsuario==usuario) {
                 let nuevoLibro=new NodoLibroUsuario(nombreLibro,cantidad);
                 let primerLibro=tempUser.abajo;
@@ -148,7 +152,7 @@ class ListaUsuariosLibros{
                 nuevoLibro.siguiente=primerLibro;
                 tempUser.sizeLibros++;
                 alert('Libro Comprado');
-                console.log("Libro: "+nuevoLibro.nombreLibro+" a usuario: "+usuario+" agregado")
+                // console.log("Libro: "+nuevoLibro.nombreLibro+" a usuario: "+usuario+" agregado")
                 break;
             }
             tempUser=tempUser.siguiente;
@@ -438,23 +442,12 @@ function handleFiles(e) {
             let libro=libros[x]
             
             listaSimpLibros.agregarLibro(libro.isbn,libro.nombre_autor,libro.nombre_libro,libro.cantidad,libro.fila,libro.columna,libro.paginas,libro.categoria);
-            // for (let x = 1; x < (3+1); x++) {
-            //    for (let y = 1; y < (3+1); y++) {
-            //         if ((x==libro.fila)&&(y==libro.columna)) {
-                        // console.log("libro insertado: "+libro.nombre_libro)
-            matrizD.insertar(libro.fila,libro.columna,libro.isbn,libro.nombre_autor,libro.nombre_libro,libro.cantidad,libro.fila,libro.columna,libro.paginas,libro.categoria)
-            matriz.insercionmatriz(libro.isbn,libro.nombre_autor,libro.nombre_libro,libro.cantidad,libro.fila,libro.columna,libro.paginas,libro.categoria);
+            if (libro.categoria=="Fantasia") {
+                matriz.insercionmatriz(libro.isbn,libro.nombre_autor,libro.nombre_libro,libro.cantidad,libro.fila,libro.columna,libro.paginas,libro.categoria);
+            }else if (libro.categoria=="Thriller") {
+                matrizD.insertar(libro.columna,libro.fila,libro.isbn,libro.nombre_autor,libro.nombre_libro,libro.cantidad,libro.fila,libro.columna,libro.paginas,libro.categoria)    
+            }
                         // matriz.insertarMatriz(libro.isbn,libro.nombre_autor,libro.nombre_libro,libro.cantidad,libro.fila,libro.columna,libro.paginas,libro.categoria,x,y);
-            //         }else{
-            //             matriz.insertarMatriz("null","null","null","null","null","null","null","null",x,y);
-            //         }
-                
-            //    }
-                
-            // }
-            
-            
-            // console.log(pitza.tipo, pitza.forma, pitza.costo);
         }
         matriz.mostrarmatriz()
         matrizD.mostrarMatriz()
@@ -465,6 +458,7 @@ function handleFiles(e) {
     lector.readAsText(archivo);
     
     alert('You have successfully upload the file!');
+    listaDobleC=new ListaDoble()
 }
 
 document.getElementById("fileupload").addEventListener("change", handleFiles, false);
@@ -491,7 +485,7 @@ class ListaEncabezado{
         this.ultimo = null
     }
     insertarlista(isbn, nombreAutor, nombreLibro, cantidad, fila, columna, paginas, categoria,x){
-        var temp = new NodoMatrizOrtogonal(isbn, nombreAutor, nombreLibro, cantidad, fila, columna, paginas, categoria,x,0);
+        var temp = new NodoMatrizOrtogonal(isbn, nombreAutor, nombreLibro, cantidad, fila, columna, paginas, categoria,x,1);
         if(this.primero == null){
             this.primero = temp;
             this.ultimo = temp;
@@ -501,7 +495,7 @@ class ListaEncabezado{
         }
 
         var aux = this.ultimo
-        for (let posy = 24; posy >= 0; posy--) {
+        for (let posy = 25; posy >= 1; posy--) {
            var nuevonodo = new NodoMatrizOrtogonal(isbn, nombreAutor, nombreLibro, cantidad, fila, columna, paginas, categoria,x,posy);
            var auxanterior = this.ultimo.abajo
            aux.abajo = nuevonodo
@@ -527,19 +521,19 @@ class MatrizOrtogonal{
     }
 
     llenarmatrizortogonal(){
-        for (let index = 0; index < 25; index++) {
+        for (let index = 1; index < 26; index++) {
             this.listahorizontal.insertarlista("", "", "", "", "", "", "","",index)
         }
     }
     mostrarmatriz(){
-        var posx = 0
+        var posx = 1
         var dotMatriz='digraph L{\n node[shape=box fillcolor="#FFEDBB" style=filled]\n subgraph cluster_p{ \n label ="Libros de Fantasia"\n bgcolor="#398D9C"\n edge[dir="both"] \n'
         let uniones=""
         var cabecerax = this.listahorizontal.buscarlista(posx)
         while(cabecerax != null){
             let alineacion="{rank=same;"
             // console.log("**************** x="+posx+"******************")
-            var numy = 0
+            var numy = 1
             var tempy = cabecerax.abajo
             while(tempy != null){
                 // console.log(tempy)
@@ -592,119 +586,6 @@ class MatrizOrtogonal{
 
 }
 
-// class MatrizOrtogonal {
-//     constructor() {
-//         this.primero = null;
-//         this.contador=0;
-//     }
-
-//     vacio(){
-//         return this.primero==null;
-//     }
-
-//     insertarMatriz(isbn,nombreAutor,nombreLibro,cantidad,fila,columna,paginas,categoria,posx,posy){
-//         // let nodoAux;
-//         // let nodoAux2;
-        
-//         if (this.vacio()) {
-//             let nuevoNodo=new NodoMatrizOrtogonal(isbn,nombreAutor,nombreLibro,cantidad,fila,columna,paginas,categoria);
-//             console.log("Nodo creado: "+nuevoNodo.nombreLibro+"pos: "+posx,posy)
-//             this.primero=nuevoNodo;
-//             this.contador++;
-//         }else{
-//             let aux=this.primero;
-//             while (aux.abajo!=null) {
-//                 aux=aux.abajo
-//             }
-//             if (this.contador!=fila) {
-//                 this.contador++;
-//                 let nuevoNodo=new NodoMatrizOrtogonal(isbn,nombreAutor,nombreLibro,cantidad,fila,columna,paginas,categoria);
-//                 console.log("Nodo creado: "+nuevoNodo.nombreLibro+"pos: "+posx,posy)
-//                 aux.abajo=nuevoNodo;
-//                 nuevoNodo.arriba=aux;
-//             }else{
-//                 while (aux.siguiente!=null) {
-//                     aux=aux.siguiente;
-//                 }
-//                 let nuevoNodo=new NodoMatrizOrtogonal(isbn,nombreAutor,nombreLibro,cantidad,fila,columna,paginas,categoria);
-//                 console.log("Nodo creado: "+nuevoNodo.nombreLibro+"pos: "+posx,posy)
-//                 aux.siguiente=nuevoNodo;
-//                 nuevoNodo.anterior=aux;
-//                 if (this.contador>1) {
-//                     let aux2=aux.arriba.siguiente;
-//                     aux2.abajo=nuevoNodo;
-//                     nuevoNodo.arriba=aux2
-//                 }
-//             }
-//         }
-
-//         // for (let x = 0; x < sizeX; x++){
-//         //     for (let y = 0; y < sizeY; y++){
-//         //         let nuevoNodo= new NodoMatrizOrtogonal(isbn,nombreAutor,nombreLibro,cantidad,fila,columna,paginas,categoria);
-//         //         if (y==0) {
-//         //             if (this.primero==null) {
-//         //                 this.primero=nuevoNodo;
-//         //             }
-//         //             nodoAux=nuevoNodo;
-//         //             console.log(nodoAux)
-//         //         }else{
-//         //             nuevoNodo.anterior=nodoAux;
-//         //             nodoAux.siguiente=nuevoNodo;
-//         //             nodoAux=nuevoNodo;
-//         //         }
-//         //         if (x==0) {
-//         //             nuevoNodo.arriba=null;
-//         //             nodoAux=nuevoNodo;
-//         //         } else {
-//         //             nuevoNodo.arriba=nodoAux2;
-//         //             nodoAux2.abajo=nuevoNodo;
-//         //             nodoAux2=nodoAux2.siguiente;
-//         //         }
-//         //     }
-//         //     nodoAux2=this.primero;
-//         //     while (nodoAux2.abajo!=null) {
-//         //         nodoAux2=nodoAux2.abajo
-//         //     }
-//         // }
-//     }
-
-    // mostrarMatriz(){
-    //     let aux=this.primero;
-    //     let texto="";
-    //     while ((aux.abajo!=null) |(aux.siguiente!=null)) {
-    //         texto=texto+" "+aux.nombreLibro;
-    //         if (aux.siguiente!=null) {
-    //             aux=aux.siguiente;
-    //         }else{
-    //             texto=texto+"\n";
-    //             if (aux.abajo!=null) {
-    //                 aux=aux.abajo;
-    //                 while (aux.anterior!=null) {
-    //                     aux=aux.anterior;
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     texto=texto+" "+aux.nombreLibro;
-    //     console.log(texto);
-    //     return texto;
-    // //     if (this.primero!=null) {
-    // //         let temp=this.primero;
-    // //         while (temp!=null) {
-    // //             let aux=temp
-    // //             while (aux!=null) {
-    // //                 console.log("Pos: "+aux.nombreLibro);
-    // //                 aux=aux.siguiente;
-    // //             }
-    // //             temp=temp.abajo;
-    // //             // console.log("-------------SIGUIENTEE FILAAA-------------")
-    // //         }
-    // //     } else {
-    // //         console.log("MATRIZ VACIA")
-    // //     }
-    // // }
-    // }
-// }
 //---------------------------------------------------------------------------------------------------------------------------------------
 
 //--------------------------------------------------MATRIZ DISPERSA PARA LIBROS THRILLER-------------------------------------------------
@@ -990,7 +871,7 @@ class ListaMatriz{
             }else{
                 let tmp=inicio.getAcceso()
                 while (tmp!=null) {
-                    console.log("X "+tmp.coordenadaX,"Y "+tmp.coordenadaY,"---"+tmp.nombreLibro);
+                    // console.log("X "+tmp.coordenadaX,"Y "+tmp.coordenadaY,"---"+tmp.nombreLibro);
                     tmp=tmp.getDerecha()
                 }
             }
@@ -1005,7 +886,7 @@ class ListaMatriz{
         let dimeny=0;
         let cabeceras=''
         for (let x = 0; x < this.filas.size; x++){
-            console.log("size: "+gg.id)
+            // console.log("size: "+gg.id)
             let inicio = this.filas.getCabeceraXFila(gg.id)
             if (inicio == null){
                 console.log('Esa coordenada de columna no existe')
@@ -1016,7 +897,7 @@ class ListaMatriz{
                 let tmp= inicio.getAcceso()
                 // #tmp = this.filas.getCabecera(fila).getAcceso()
                 while (tmp != null){
-                        graphviz+='nodo'+tmp.coordenadaX+'_'+tmp.coordenadaY+'[label="'+tmp.nombreLibro+'",fillcolor=white,group=0]'
+                        graphviz+='nodo'+tmp.coordenadaX+'_'+tmp.coordenadaY+'[label="'+tmp.nombreLibro+'",fillcolor=white,group=0] \n'
                     // # print("X "+tmp.coordenadaX,"Y "+tmp.coordenadaY,"---"+tmp.caracter)
                     dimeny=tmp.coordenadaY
                     tmp = tmp.getDerecha()
@@ -1026,13 +907,6 @@ class ListaMatriz{
             }
             
             gg=gg.siguiente
-            
-        }
-        for (let index = 1; index < dimen+1; index++) {
-            for (let y = 1; y < dimeny+1; y++) {
-                console.log("cabecera: "+index+","+y)
-                cabeceras+='nodoC'+index+'_'+y+'[label="'+index+','+y+'",fillcolor=white,group=0]'
-            }
             
         }
         cabeceras+=graphviz
@@ -1051,69 +925,132 @@ class ListaMatriz{
         let n=parseInt(tamN)+1
         let x="hola"
         
-        // # print(posiciones.mostrarAzulejosPatron())
-        // # print("hola")
-        
-        let graphviz='digraph L{ node[shape=box fillcolor="#FFEDBB" style=filled] subgraph cluster_p{ label ="LIBROS THRILLER" bgcolor="#398D9C" edge[dir="none"]'
-        let g=gra[0]
-        graphviz=graphviz+g
-        for (let fi = 1; fi < parseInt(m); fi++) {
-            let grupo=2
-            for (let col = 1; col < parseInt(n); col++) {
-                if (parseInt(grupo)<parseInt(n)) {
-                    graphviz+='nodo'+fi+'_'+col+'->nodo'+fi+'_'+grupo+'[dir=both color="#black"]'
-                    grupo++;
-                }
-            }
-                
-        }
+        // let graphviz='digraph L{ node[shape=box fillcolor="#FFEDBB" style=filled] subgraph cluster_p{ label ="LIBROS THRILLER" bgcolor="#398D9C" edge[dir="none"]'
+        let graphviz='digraph L{ \n node[shape=box fillcolor="#FFEDBB" style=filled]\n subgraph cluster_p{\n label ="LIBROS THRILLER" \n'
+        graphviz+='bgcolor="#398D9C" \n raiz[label="0,0" group=0] \n edge[dir="both"] \n //AQUI CREAMOS LAS CABECERAS DE LAS FILAS \n'
+        /*
+        digraph L{ \n node[shape=box fillcolor="#FFEDBB" style=filled]\n subgraph cluster_p{\n label ="Nombre Terreno: '''+nombre+'"' \n
+        bgcolor="#398D9C" \n raiz[label="0,0"] \n edge[dir="both"] \n //AQUI CREAMOS LAS CABECERAS // DE LAS FILAS
+        */
 
-        for (let fi = 1; fi < parseInt(m); fi++) {
-            graphviz+='{rank=same;'
-            let grupo=2;
-            for (let col = 1; col < parseInt(n); col++) {
-                if (parseInt(col)<parseInt(n-1)) {
-                    graphviz+='nodo'+fi+'_'+col+','
-                    grupo++
-                }else{
-                    graphviz+=' nodo'+fi+'_'+col
-                }
-            }
-            graphviz+='}'
+        let pivote=this.filas.primero;
+        let posx=0;
+        while (pivote!=null) {
+            //creamos los nodos de cabeceras de cada fila
+            graphviz+='Fila'+pivote.id+'[label="'+pivote.id+'",group=0]; \n'
+            pivote=pivote.siguiente;
+            posx++;
         }
+        pivote=this.filas.primero;
+        while (pivote.siguiente!=null) {
+            //enlazamos cada nodo de cabecera fila
+            graphviz+='Fila'+pivote.id+'->'+'Fila'+pivote.siguiente.id+'; \n';
+            pivote=pivote.siguiente;
+        }
+        //enlazo la raiz con el primero encabezado fila
+        graphviz+='raiz->'+'Fila'+this.filas.primero.id+'; \n';
 
-        // ## AQUI ENLAZAMOS LAS COLUMNAS
-        for (let col = 1; col < parseInt(n); col++) {
-            let fila=2;
-            for (let fi = 1; fi < parseInt(m-1); fi++) {
-               graphviz+='nodo'+fi+'_'+col+'->nodo'+fila+'_'+col+'[dir=both color="#black"];'
-                fila++;
+        //graficar nodos columna
+        let pivotey=this.columnas.primero;
+        let posy=0;
+        while (pivotey!=null) {
+            graphviz+='Columna'+pivotey.id+'[label="'+pivotey.id+'",group='+pivotey.id+',fillcolor=yellow]; \n'
+            pivotey=pivotey.siguiente;
+            posy++;
+        }
+        pivotey=this.columnas.primero;
+        let uniones='{rank=same;raiz,\n'
+        while (pivotey.siguiente!=null) {
+            // let auxp=pivotey.siguiente
+            graphviz+='Columna'+pivotey.id+'->'+'Columna'+pivotey.siguiente.id+'; \n'
+            if (pivotey.siguiente==null) {
+                // uniones+='Columna'+pivotey.siguiente.id+' \n'
+            }else{
+                uniones+='Columna'+pivotey.id+', \n'
+                uniones+='Columna'+pivotey.siguiente.id+' \n'
             }
             
+            pivotey=pivotey.siguiente;
+        }
+        uniones+='}'
+        graphviz+=uniones;
+        graphviz+='raiz->'+'Columna'+this.columnas.primero.id+'; \n'
+
+        //CON LAS CABECERAS GRAFICAS, GRAFICAMOS LOS NODOS INTERNOS
+        pivote=this.filas.primero;
+        posx=0;
+        while(pivote!=null){
+            let pCelda=pivote.getAcceso();
+            while (pCelda!=null) {
+                //buscamos posy
+                pivotey=this.columnas.primero;
+                let posYCelda=0;
+                while (pivotey!=null) {
+                    if (pivotey.id==pCelda.coordenadaY) {
+                        break;
+                    }
+                    posYCelda++
+                    pivotey=pivotey.siguiente;
+                }
+                graphviz+='nodo'+pCelda.coordenadaX+'_'+pCelda.coordenadaY+'[label="'+pCelda.nombreLibro+'",fillcolor=green,group='+pCelda.coordenadaY+'] \n'
+                pCelda=pCelda.getDerecha();
+            }
+            let pC=pivote.getAcceso()
+            console.log("guenas: "+pC.coordenadaX)
+            let union='{rank=same; Fila'+pC.coordenadaX+','
+            while (pC!=null) {
+                // console.log("guenas: "+pC.nombreLibro)
+                if (pC.derecha!=null) {
+                    graphviz+='nodo'+pC.coordenadaX+'_'+pC.coordenadaY+'->'+'nodo'+pC.derecha.coordenadaX+'_'+pC.derecha.coordenadaY+'; \n //hi \n'
+                }
+                if (pC.derecha==null) {
+                    union+='nodo'+pC.coordenadaX+'_'+pC.coordenadaY+'\n'
+                }
+                else{
+                    union+='nodo'+pC.coordenadaX+'_'+pC.coordenadaY+', \n'
+                }
+                pC=pC.derecha;
+            }
+            union+='}'
+            graphviz+=union
+            /*
+            nodo3_4[label="Ulmax",fillcolor=green,group=4] 
+            nodo3_5[label="Zoinage",fillcolor=green,group=5] 
+            Fila3->nodo3_4; 
+            //agregado
+            nodo3_4->nodo3_5
+            {rank=same;Fila3,nodo3_4,nodo3_5}
+            */
+            //unimos las filas con las celdas que tienen esa posicion en X
+            graphviz+='Fila'+pivote.id+'->'+'nodo'+pivote.getAcceso().coordenadaX+'_'+pivote.getAcceso().coordenadaY+'; \n'
+            pivote=pivote.siguiente
+            posx++
+        }
+        
+        // aca enlazamos cada nodo con la columan donde pertenece
+        pivote=this.columnas.primero;
+        while (pivote!=null) {
+            let pCelda=pivote.getAcceso()
+            while (pCelda!=null) {
+                if (pCelda.abajo!=null) {
+                    graphviz+='nodo'+pCelda.coordenadaX+'_'+pCelda.coordenadaY+'->nodo'+pCelda.abajo.coordenadaX+'_'+pCelda.abajo.coordenadaY+'; \n'
+                }
+                pCelda=pCelda.abajo;
+            }
+            graphviz+='Columna'+pivote.id+'->'+'nodo'+pivote.getAcceso().coordenadaX+'_'+pivote.getAcceso().coordenadaY+'; \n'
+            pivote=pivote.siguiente
         }
         graphviz+='}}'
-        console.log(graphviz)
+        // console.log(graphviz)
+        d3.select("#matrizD").graphviz()
+            .width(1500)
+            .height(1500)
+            .renderDot(graphviz);
      }    
         
-        // # for col in range(1,int(n)):
-        // #     # grupo=2
-        // #     for fi in range(1,int(m)):
-        // #         grupo=2
-        // #         if int(grupo)<int(m-1):  
-        // #             graphviz=graphviz+'''
-        // #                 nodo'''+str(fi)+'''_'''+str(col)+'''->nodo'''+str(grupo)+'''_'''+str(col)+'''[dir=none color="#398D9C"]
-        // #             '''
-        // #             grupo=grupo+1
-        // graphviz=graphviz+'} }'
 }
         
         
-               
-                
-                
-                
-      
-
 
 //----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -1157,3 +1094,135 @@ class Cola{
 }
 
 //-------------------------------------------------------------------------------------------------------
+
+//--------------------------------------------LISTA DOBLE TOP PERSONAS CON MAS LIBROS COMPRADOS-----------------------
+
+class NodoDoble{
+    constructor(nombreUsuario,edad,cantidadLibros){
+        this.nombreUsuario=nombreUsuario;
+        this.edad=edad;
+        this.cantidadLibros=cantidadLibros;
+        this.siguiente=null;
+        this.anterior=null;
+    }
+
+}
+
+class ListaDoble{
+    constructor(){
+        this.inicio=null;
+        this.final=null;
+        this.size=0;
+    }
+
+    insertar(nombreUsuario,edad,cantidadLibros){
+        let nuevo= new NodoDoble(nombreUsuario,edad,cantidadLibros);
+        let follow=false
+        this.size++;
+        if (this.inicio==null) {
+            this.inicio=nuevo
+        }
+        else{
+            let tmp=this.inicio;
+            console.log("hiri11")
+            while (tmp!=null) {
+                if (tmp.nombreUsuario==nombreUsuario) {
+                    console.log("hiri")
+                    tmp.cantidadLibros+=cantidadLibros;
+                    follow=true;
+                }
+                tmp=tmp.siguiente
+            }
+            if (!follow) {
+                tmp=this.inicio
+                while (tmp.siguiente!=null) {
+                    tmp=tmp.siguiente;
+                }
+                tmp.siguiente=nuevo;
+                nuevo.anterior=tmp;
+                this.final=nuevo;
+            }
+        }
+    }
+    mostrarUsuarios(){
+        this.ordenarTop()
+        let tmp=this.inicio;
+        let contador=0;
+        var menu=document.getElementById("menu")
+        menu.innerHTML='<h2 class="header center">Top Usuarios con más compras</h2>'
+        let dot='digraph L{ \n node[shape=box fillcolor="#FFEDBB" style=filled] \n subgraph cluster_p{ \n label ="TOP USUARIOS CON MÁS COMPRAS" \n bgcolor="#398D9C" \n edge[dir="both"] \n'
+        console.log("-------------------------USUARIOS ORDENADOS-----------------")
+        while (tmp!=null && contador<6) {
+            dot+='nodo'+contador+'[label="'+tmp.nombreUsuario+' \n Cantidad: '+tmp.cantidadLibros+'",fillcolor=white,group='+contador+'] \n'    
+            menu.innerHTML+=        '<div class="col s12 m6 l4" style="padding: 30px 5px;">\n <div class="card">\n <div class="card-image waves-effect waves-block waves-light">\n <img class="activator" src="https://definicion.de/wp-content/uploads/2019/06/perfildeusuario.jpg">\n </div>\n <div class="card-content">\n <span class="card-title activator grey-text text-darken-4" style="font-weight: 500;">'+tmp.nombreUsuario+'<i class="material-icons right">more_vert</i></span>\n </div>\n <div class="card-reveal">\n <span class="card-title grey-text text-darken-4" style="font-size: 2rem; font-weight: 500;">'+tmp.nombreCompleto+'<i class="material-icons right">close</i></span>\n </div>\n </div>\n'
+            console.log("usuario: "+tmp.nombreUsuario+" cantidad: "+tmp.cantidadLibros)
+            contador++
+            tmp=tmp.siguiente;
+        }
+        for (let index = 0; index < this.size-1; index++) {
+                dot+='nodo'+index+'->'+'nodo'+(index+1)+'; \n'
+        }
+        let rank='{rank=same; \n'
+        if (this.size==1) {
+            rank+='nodo0 \n'
+        }
+        for (let index = 0; index < this.size-1; index++) {
+            if (index==this.size-2) {
+                rank+='nodo'+index+', \n'
+                rank+='nodo'+(index+1)+'\n'
+            }else{
+                rank+='nodo'+index+',   \n'
+            }
+            
+        }
+
+
+        rank+='}'
+        dot+=rank
+        dot+='}}'
+        console.log(dot)
+        d3.select("#topuser").graphviz()
+            .width(1500)
+            .height(1500)
+            .renderDot(dot);
+    }
+
+    ordenarTop(){
+        if (this.size>1) {
+            while (true) {
+                let actual=this.inicio;
+                let x=null;
+                let y=this.inicio.siguiente;
+                let cambio=false
+                while (y!=null) {
+                    if (actual.cantidadLibros<y.cantidadLibros) {
+                        cambio=true;
+                        if (x!=null) {
+                            let tmp=y.siguiente;
+                            x.siguiente=y;
+                            y.siguiente=actual;
+                            actual.siguiente=tmp
+                        }else{
+                            let tmp2=y.siguiente;
+                            this.inicio=y;
+                            y.siguiente=actual;
+                            actual.siguiente=tmp2
+                        }
+                        x=y;
+                        y=actual.siguiente;
+                    }else{
+                        x=actual;
+                        actual=y;
+                        y=y.siguiente
+                    }
+                }if (!cambio) {
+                    break;
+                }
+            }
+        }
+    }
+}
+
+
+
+//--------------------------------------------------------------------------------------------------------------------
