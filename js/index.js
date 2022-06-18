@@ -562,7 +562,7 @@ class MatrizOrtogonal{
         dotMatriz+=uniones
         dotMatriz+='}}'
         // console.log(dotMatriz)
-        d3.select("#matriz").graphviz()
+        var canvas=d3.select("#matriz").graphviz()
             .width(1500)
             .height(1500)
             .renderDot(dotMatriz);
