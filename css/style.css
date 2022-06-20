@@ -163,7 +163,7 @@ footer li{
 }
 
 #grafica{
-  height: 800px;
+  height: 1800px;
   width: 500px;
   background-color: white;
 }
@@ -181,4 +181,30 @@ footer li{
   height: 500px;
   width: 500px;
   background-color: white;
+}
+#colaDisponibilidad {
+  height: 950px;
+  width: 950px;
+  background-color: white;
+}
+#pila {
+  height: 500px;
+  width: 500px;
+  background-color: white;
+  margin: 0 auto;
+}
+
+#libreraF{
+  height: 1500px;
+  width: 1500px;
+  background-image: url("https://thumbs.dreamstime.com/z/librer%C3%ADa-vac%C3%ADa-de-madera-en-la-habitaci%C3%B3n-gabinete-estantes-ilustraci%C3%B3n-vectorial-acciones-170573667.jpg");
+}
+
+#libreraT{
+  pointer-events: none;
+  padding-left: 100px;
+  height: 1500px;
+  width: 1500px;
+  background-color: red;
+  /* background-image: url("https://thumbs.dreamstime.com/z/librer%C3%ADa-vac%C3%ADa-de-madera-en-la-habitaci%C3%B3n-gabinete-estantes-ilustraci%C3%B3n-vectorial-acciones-170573667.jpg"); */
 }
